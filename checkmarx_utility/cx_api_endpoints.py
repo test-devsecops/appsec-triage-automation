@@ -4,6 +4,18 @@ class CxApiEndpoints:
     def get_access_token(tenant_name):
         endpoint = f"/auth/realms/{tenant_name}/protocol/openid-connect/token"
         return endpoint
+    
+    @staticmethod
+    def get_sast_results():
+        endpoint = f"/api/sast-results"
+        return endpoint
+    
+    @staticmethod
+    def get_query_descriptions():
+        endpoint = f"/api/queries/descriptions"
+        return endpoint
+
+# -------------- Not being used ------------------
 
     @staticmethod
     def get_project_last_scan():

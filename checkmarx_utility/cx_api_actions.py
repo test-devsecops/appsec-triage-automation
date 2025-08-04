@@ -45,6 +45,48 @@ class CxApiActions:
         return response.get("access_token")
     
     @ExceptionHandler.handle_exception
+    def get_sast_results(self, access_token, scan_id, vuln_id=None):
+
+        endpoint = self.apiEndpoints.get_sast_results()
+        url = f"https://{self.tenant_url}{endpoint}"
+
+        headers = {
+            "accept": "application/json; version=1.0",
+            "authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json; version=1.0"
+        }
+
+        params = {
+            "scan-id": scan_id,
+            "result-id": vuln_id
+        }
+
+        response = self.httpRequest.get_api_request(url, headers=headers, params=params)
+        return response
+    
+    @ExceptionHandler.handle_exception
+    def get_query_descriptions(self, access_token, scan_id, query_id):
+
+        endpoint = self.apiEndpoints.get_sast_results()
+        url = f"https://{self.tenant_url}{endpoint}"
+
+        headers = {
+            "accept": "application/json; version=1.0",
+            "authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json; version=1.0"
+        }
+
+        params = {
+            "scan-id": scan_id,
+            "ids": query_id
+        }
+
+        response = self.httpRequest.get_api_request(url, headers=headers, params=params)
+        return response
+
+# -------------- Not being used ------------------
+    
+    @ExceptionHandler.handle_exception
     def get_scan_summary(self, access_token, scan_ids):
 
         endpoint = self.apiEndpoints.get_scan_summary()
