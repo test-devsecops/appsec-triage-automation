@@ -11,7 +11,7 @@ class Config:
 
         # Load the .env file from the same directory as the script. Uncomment this when running the scripts on your local machine
         # env_path = Path(__file__).resolve().parent / '.env'
-        # load_dotenv(dotenv_path=env_path)
+        # load_dotenv(dotenv_path=env_path) ###
 
         self.token = os.getenv('CX_TOKEN')
         self.tenant_name = os.getenv('TENANT_NAME')
