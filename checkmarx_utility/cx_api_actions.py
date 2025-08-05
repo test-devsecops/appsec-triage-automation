@@ -22,7 +22,6 @@ class CxApiActions:
 
     @ExceptionHandler.handle_exception
     def get_access_token(self):
-        print(self.token)
         endpoint = self.apiEndpoints.get_access_token(self.tenant_name)
         url = f"https://{self.tenant_url}{endpoint}"
 
@@ -67,7 +66,7 @@ class CxApiActions:
     @ExceptionHandler.handle_exception
     def get_query_descriptions(self, access_token, scan_id, query_id):
 
-        endpoint = self.apiEndpoints.get_sast_results()
+        endpoint = self.apiEndpoints.get_query_descriptions()
         url = f"https://{self.tenant_url}{endpoint}"
 
         headers = {
