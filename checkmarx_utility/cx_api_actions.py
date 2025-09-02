@@ -1,4 +1,3 @@
-
 from checkmarx_utility.cx_api_endpoints import CxApiEndpoints
 from checkmarx_utility.cx_config_utility import Config
 
@@ -6,52 +5,30 @@ from utils.exception_handler import ExceptionHandler
 from utils.http_utility import HttpRequests
 
 from urllib.parse import urlencode
-
 import requests
 import base64
 import sys
 
 class CxApiActions:
 
-    def __init__(self, configEnvironment=None):
+    def __init__(self, access_token, logger, configEnvironment=None):
         self.httpRequest = HttpRequests()
         self.apiEndpoints = CxApiEndpoints()
+        self.logger = logger
+        self.access_token = access_token
         self.config = Config() #"config.env"
 
         self.token, self.tenant_name, self.tenant_iam_url, self.tenant_url = self.config.get_config()
-
-    @ExceptionHandler.handle_exception
-    def get_access_token(self):
-        endpoint = self.apiEndpoints.get_access_token(self.tenant_name)
-        url = f"https://{self.tenant_url}{endpoint}"
-
-        headers = {
-            "accept": "application/json",
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
-
-        data = {
-            "grant_type": "refresh_token",
-            "client_id": "ast-app",
-            "refresh_token": self.token
-        }
-
-        encoded_data = urlencode(data)
-
-        response = self.httpRequest.post_api_request(url, headers, encoded_data)
-        print("Successfully generated a token")
-
-        return response.get("access_token")
     
     @ExceptionHandler.handle_exception
-    def get_sast_results(self, access_token, scan_id, vuln_id=None):
+    def get_sast_results(self, scan_id, vuln_id=None):
 
         endpoint = self.apiEndpoints.get_sast_results()
         url = f"https://{self.tenant_url}{endpoint}"
 
         headers = {
             "accept": "application/json; version=1.0",
-            "authorization": f"Bearer {access_token}",
+            "authorization": f"Bearer {self.access_token}",
             "Content-Type": "application/json; version=1.0"
         }
 
@@ -62,16 +39,31 @@ class CxApiActions:
 
         response = self.httpRequest.get_api_request(url, headers=headers, params=params)
         return response
+
+    @ExceptionHandler.handle_exception
+    def get_scan_details(self, scan_id):
+
+        endpoint = self.apiEndpoints.get_scan_details(scan_id)
+        url = f"https://{self.tenant_url}{endpoint}"
+
+        headers = {
+            "accept": "application/json; version=1.0",
+            "authorization": f"Bearer {self.access_token}",
+            "Content-Type": "application/json; version=1.0"
+        }
+
+        response = self.httpRequest.get_api_request(url, headers=headers)
+        return response
     
     @ExceptionHandler.handle_exception
-    def get_query_descriptions(self, access_token, scan_id, query_id):
+    def get_query_descriptions(self, scan_id, query_id):
 
         endpoint = self.apiEndpoints.get_query_descriptions()
         url = f"https://{self.tenant_url}{endpoint}"
 
         headers = {
             "accept": "application/json; version=1.0",
-            "authorization": f"Bearer {access_token}",
+            "authorization": f"Bearer {self.access_token}",
             "Content-Type": "application/json; version=1.0"
         }
 

@@ -11,6 +11,11 @@ class CxApiEndpoints:
         return endpoint
     
     @staticmethod
+    def get_scan_details(scan_id):
+        endpoint = f"/api/scans/{scan_id}"
+        return endpoint
+    
+    @staticmethod
     def get_query_descriptions():
         endpoint = f"/api/queries/descriptions"
         return endpoint
