@@ -19,6 +19,11 @@ class CxApiEndpoints:
     def get_query_descriptions():
         endpoint = f"/api/queries/descriptions"
         return endpoint
+    
+    @staticmethod
+    def get_sca_vuln_details():
+        endpoint = f"/api/sca/graphql/graphql"
+        return endpoint
 
 # -------------- Not being used ------------------
 
