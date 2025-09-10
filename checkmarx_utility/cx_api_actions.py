@@ -112,6 +112,9 @@ class CxApiActions:
 
         response = self.httpRequest.post_api_request(url, headers=headers, json=json_payload)
         return response
+    
+    def get_tenant_url(self):
+        return self.tenant_url
 
 # -------------- Not being used ------------------
     
@@ -199,13 +202,6 @@ class CxApiActions:
         response = self.httpRequest.put_api_request(url, headers=headers, json=payload)
         return response
 
-
-
-
-
-
-    @ExceptionHandler.handle_exception
-    def get_tenant_url(self):
-        return self.tenant_url
+   
         
     
