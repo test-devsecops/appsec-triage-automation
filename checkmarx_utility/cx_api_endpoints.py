@@ -21,8 +21,18 @@ class CxApiEndpoints:
         return endpoint
     
     @staticmethod
-    def get_sca_vuln_details():
+    def get_vulnerability_details(cve_id):
+        endpoint = f"/api/sca/vulnerabilities/v1/{cve_id}"
+        return endpoint
+
+    @staticmethod
+    def get_sca_vuln_details_graphql():
         endpoint = f"/api/sca/graphql/graphql"
+        return endpoint
+
+    @staticmethod
+    def get_csec_vuln_details_graphql():
+        endpoint = f"/api/containers/buffet/graphql"
         return endpoint
 
 # -------------- Not being used ------------------

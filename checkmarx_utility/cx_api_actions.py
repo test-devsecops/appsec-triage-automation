@@ -74,11 +74,26 @@ class CxApiActions:
 
         response = self.httpRequest.get_api_request(url, headers=headers, params=params)
         return response
+
+    @ExceptionHandler.handle_exception
+    def get_vulnerability_details(self, cve_id):
+
+        endpoint = self.apiEndpoints.get_vulnerability_details(cve_id)
+        url = f"https://{self.tenant_url}{endpoint}"
+
+        headers = {
+            "accept": "application/json; version=1.0",
+            "authorization": f"Bearer {self.access_token}",
+            "Content-Type": "application/json; version=1.0"
+        }
+
+        response = self.httpRequest.get_api_request(url, headers=headers)
+        return response
     
     @ExceptionHandler.handle_exception
-    def post_sca_vulnerability_details(self, scan_id, project_id, vuln_id, version):
+    def get_sca_vulnerability_details_graphql(self, scan_id, project_id, vuln_id, version):
 
-        endpoint = self.apiEndpoints.get_sca_vuln_details()
+        endpoint = self.apiEndpoints.get_sca_vuln_details_graphql()
         url = f"https://{self.tenant_url}{endpoint}"
 
         headers = {
@@ -107,6 +122,75 @@ class CxApiActions:
                 }
                 },
                 "isExploitablePathEnabled": True
+            }
+        }
+
+        response = self.httpRequest.post_api_request(url, headers=headers, json=json_payload)
+        return response
+    
+    @ExceptionHandler.handle_exception
+    def get_image_id_graphql(self, scan_id, project_id):
+
+        endpoint = self.apiEndpoints.get_csec_vuln_details_graphql()
+        url = f"https://{self.tenant_url}{endpoint}"
+
+        headers = {
+            "accept": "application/json; version=1.0",
+            "authorization": f"Bearer {self.access_token}",
+            "Content-Type": "application/json; version=1.0",
+            "cx-authentication-type": "service",
+            "cx-project-id": project_id
+        }
+
+        json_payload = {
+            "query": "query GetTableFilesData ($scanId: UUID!, $take: Int, $skip: Int, $includeRuntimeData: Boolean) { images (scanId: $scanId, take: $take, skip: $skip, includeRuntimeData: $includeRuntimeData) { totalCount, items { baseImage, fixable, imageId, imageName, isImageMalicious, maliciousDescription, maliciousPackagesCount, pkgCount, vulnerablePkgCount, runtime, scanError, severity, size, status, snoozeDate, vulnerabilities { criticalCount, highCount, mediumCount, lowCount, noneCount }, groupsData { fileName, filePath } } } }",
+            "variables": {
+                "scanId": scan_id,
+                "take": 100,
+                "skip": 0,
+                "includeRuntimeData": False
+            }
+        }
+
+        response = self.httpRequest.post_api_request(url, headers=headers, json=json_payload)
+        return response
+
+    @ExceptionHandler.handle_exception
+    def get_csec_vulnerability_details_graphql(self, scan_id, project_id, image_id, package_id):
+
+        endpoint = self.apiEndpoints.get_csec_vuln_details_graphql()
+        url = f"https://{self.tenant_url}{endpoint}"
+
+        headers = {
+            "accept": "application/json; version=1.0",
+            "authorization": f"Bearer {self.access_token}",
+            "Content-Type": "application/json; version=1.0",
+            "cx-authentication-type": "service",
+            "cx-project-id": project_id
+        }
+
+        json_payload = {
+            "query": "query GetImagesVulnerabilities ($scanId: UUID!, $imageId: String, $take: Int, $skip: Int, $searchTerm: String, $order: [PackageVulnerabilityTypeSortInput!], $where: PackageVulnerabilityTypeFilterInput, $vulnerabilityFilter: VulnerabilityFilterInput) { imagesVulnerabilities (scanId: $scanId, imageId: $imageId, take: $take, skip: $skip, searchTerm: $searchTerm, order: $order, where: $where, vulnerabilityFilter: $vulnerabilityFilter) { totalCount items { packageName distribution type packageVersion packageId runtimeUsage isMalicious risksCount status snoozeDate id aggregatedRisks { critical high medium low none risksList { cve vulnerabilityLevel vulnerabilityScore description publicationDate fixedVersion state originalSeverityLevel } } binaryList { version name } } } }",
+            "variables": {
+                "scanId": scan_id,
+                "imageId": image_id,
+                "take": 10,
+                "skip": 0,
+                "searchTerm": "",
+                "order": [
+                { "isMalicious": "ASC" },
+                { "runtimeUsage": "ASC" },
+                { "aggregatedRisks": { "critical": "DESC", "high": "DESC", "medium": "DESC", "low": "DESC", "none": "DESC" } }
+                ],
+                "where": {
+                    "packageId": {
+                        "eq": package_id
+                    }
+                },
+                "vulnerabilityFilter": {
+                "fromScore": 0,
+                "toScore": 10
+                }
             }
         }
 
