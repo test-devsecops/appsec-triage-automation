@@ -156,6 +156,55 @@ class CxApiActions:
         return response
 
     @ExceptionHandler.handle_exception
+    def get_csec_image_layer_graphql(self, scan_id, project_id, image_id):
+        endpoint = self.apiEndpoints.get_csec_vuln_details_graphql()
+        url = f"https://{self.tenant_url}{endpoint}"
+
+        headers = {
+            "accept": "application/json; version=1.0",
+            "authorization": f"Bearer {self.access_token}",
+            "Content-Type": "application/json; version=1.0",
+            "cx-authentication-type": "service",
+            "cx-project-id": project_id
+        }
+
+        json_payload = {
+            "query": "query GetImagesAndLayers ($scanId: UUID!, $imageId: String!) { imageLayers(scanId: $scanId, imageId: $imageId) { imageName severityLevel fixable layers { command layerId size severityLevel index } fromImages { imageName severity fixable layers { command layerId size severityLevel index } } } }",
+            "variables": {
+                "scanId": scan_id,
+                "imageId": image_id
+            }
+        }
+
+        response = self.httpRequest.post_api_request(url, headers=headers, json=json_payload)
+        return response
+    
+    @ExceptionHandler.handle_exception
+    def get_csec_image_remediations_graphql(self, scan_id, project_id, image_id):
+
+        endpoint = self.apiEndpoints.get_csec_vuln_details_graphql()
+        url = f"https://{self.tenant_url}{endpoint}"
+
+        headers = {
+            "accept": "application/json; version=1.0",
+            "authorization": f"Bearer {self.access_token}",
+            "Content-Type": "application/json; version=1.0",
+            "cx-authentication-type": "service",
+            "cx-project-id": project_id
+        }
+
+        json_payload = {
+            "query": "query GetImageRemediations ($scanId: UUID!, $imageId: String!) { imageRemediations(scanId: $scanId, imageId: $imageId) { lowVulnerabilitiesCount mediumVulnerabilitiesCount highVulnerabilitiesCount criticalVulnerabilitiesCount imageId minorRecommendedImages { imageId lowVulnerabilitiesCountDelta mediumVulnerabilitiesCountDelta highVulnerabilitiesCountDelta criticalVulnerabilitiesCountDelta } majorRecommendedImages { imageId lowVulnerabilitiesCountDelta mediumVulnerabilitiesCountDelta highVulnerabilitiesCountDelta criticalVulnerabilitiesCountDelta } alternativeRecommendedImages { imageId lowVulnerabilitiesCountDelta mediumVulnerabilitiesCountDelta highVulnerabilitiesCountDelta criticalVulnerabilitiesCountDelta } nextRecommendedImages { imageId lowVulnerabilitiesCountDelta mediumVulnerabilitiesCountDelta highVulnerabilitiesCountDelta criticalVulnerabilitiesCountDelta } notOutdatedRecommendedImages { imageId lowVulnerabilitiesCountDelta mediumVulnerabilitiesCountDelta highVulnerabilitiesCountDelta criticalVulnerabilitiesCountDelta } } }",
+            "variables": {
+                "scanId": scan_id,
+                "imageId": image_id
+            }
+        }
+
+        response = self.httpRequest.post_api_request(url, headers=headers, json=json_payload)
+        return response
+    
+    @ExceptionHandler.handle_exception
     def get_csec_vulnerability_details_graphql(self, scan_id, project_id, image_id, package_id):
 
         endpoint = self.apiEndpoints.get_csec_vuln_details_graphql()
