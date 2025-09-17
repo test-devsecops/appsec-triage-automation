@@ -1,4 +1,3 @@
-
 from checkmarx_utility.cx_api_endpoints import CxApiEndpoints
 from checkmarx_utility.cx_config_utility import Config
 
@@ -6,43 +5,251 @@ from utils.exception_handler import ExceptionHandler
 from utils.http_utility import HttpRequests
 
 from urllib.parse import urlencode
-
 import requests
 import base64
 import sys
 
 class CxApiActions:
 
-    def __init__(self, configEnvironment=None):
+    def __init__(self, access_token, logger, configEnvironment=None):
         self.httpRequest = HttpRequests()
         self.apiEndpoints = CxApiEndpoints()
+        self.logger = logger
+        self.access_token = access_token
         self.config = Config() #"config.env"
 
-        self.token, self.tenant_name, self.tenant_iam_url, self.tenant_url = self.config.get_config(configEnvironment)
-
+        self.token, self.tenant_name, self.tenant_iam_url, self.tenant_url = self.config.get_config()
+    
     @ExceptionHandler.handle_exception
-    def get_access_token(self):
+    def get_sast_results(self, scan_id, vuln_id=None):
 
-        endpoint = self.apiEndpoints.get_access_token(self.tenant_name)
+        endpoint = self.apiEndpoints.get_sast_results()
         url = f"https://{self.tenant_url}{endpoint}"
 
         headers = {
-            "accept": "application/json",
-            "Content-Type": "application/x-www-form-urlencoded"
+            "accept": "application/json; version=1.0",
+            "authorization": f"Bearer {self.access_token}",
+            "Content-Type": "application/json; version=1.0"
         }
 
-        data = {
-            "grant_type": "refresh_token",
-            "client_id": "ast-app",
-            "refresh_token": self.token
+        params = {
+            "scan-id": scan_id,
+            "result-id": vuln_id
         }
 
-        encoded_data = urlencode(data)
+        response = self.httpRequest.get_api_request(url, headers=headers, params=params)
+        return response
 
-        response = self.httpRequest.post_api_request(url, headers, encoded_data)
-        print("Successfully generated a token")
+    @ExceptionHandler.handle_exception
+    def get_scan_details(self, scan_id):
 
-        return response.get("access_token")
+        endpoint = self.apiEndpoints.get_scan_details(scan_id)
+        url = f"https://{self.tenant_url}{endpoint}"
+
+        headers = {
+            "accept": "application/json; version=1.0",
+            "authorization": f"Bearer {self.access_token}",
+            "Content-Type": "application/json; version=1.0"
+        }
+
+        response = self.httpRequest.get_api_request(url, headers=headers)
+        return response
+    
+    @ExceptionHandler.handle_exception
+    def get_query_descriptions(self, scan_id, query_id):
+
+        endpoint = self.apiEndpoints.get_query_descriptions()
+        url = f"https://{self.tenant_url}{endpoint}"
+
+        headers = {
+            "accept": "application/json; version=1.0",
+            "authorization": f"Bearer {self.access_token}",
+            "Content-Type": "application/json; version=1.0"
+        }
+
+        params = {
+            "scan-id": scan_id,
+            "ids": query_id
+        }
+
+        response = self.httpRequest.get_api_request(url, headers=headers, params=params)
+        return response
+
+    @ExceptionHandler.handle_exception
+    def get_vulnerability_details(self, cve_id):
+
+        endpoint = self.apiEndpoints.get_vulnerability_details(cve_id)
+        url = f"https://{self.tenant_url}{endpoint}"
+
+        headers = {
+            "accept": "application/json; version=1.0",
+            "authorization": f"Bearer {self.access_token}",
+            "Content-Type": "application/json; version=1.0"
+        }
+
+        response = self.httpRequest.get_api_request(url, headers=headers)
+        return response
+    
+    @ExceptionHandler.handle_exception
+    def get_sca_vulnerability_details_graphql(self, scan_id, project_id, vuln_id, version):
+
+        endpoint = self.apiEndpoints.get_sca_vuln_details_graphql()
+        url = f"https://{self.tenant_url}{endpoint}"
+
+        headers = {
+            "accept": "application/json; version=1.0",
+            "authorization": f"Bearer {self.access_token}",
+            "Content-Type": "application/json; version=1.0",
+            "cx-authentication-type": "service",
+            "cx-project-id": project_id
+        }
+
+        json_payload = {
+            "query": "query GetVulnerabilitiesByScanId ($scanId: UUID!, $take: Int!, $skip: Int!, $order: [VulnerabilitiesSort!], $where: VulnerabilityModelFilterInput, $isExploitablePathEnabled: Boolean!) {\n  vulnerabilitiesRisksByScanId (\n    scanId: $scanId,\n    take: $take,\n    skip: $skip,\n    order: $order,\n    where: $where,\n    isExploitablePathEnabled: $isExploitablePathEnabled\n  ) {\n    totalCount\n    items {\n      credit\n      state\n      isIgnored\n      cve\n      cwe\n      description\n      packageId\n      severity\n      type\n      published\n      score\n      violatedPolicies\n      isExploitable\n      exploitabilityReason\n      exploitabilityStatus\n      isKevDataExists\n      isExploitDbDataExists\n      vulnerabilityFixResolutionText\n      relation\n      epssData {\n        cve\n        date\n        epss\n        percentile\n      }\n      isEpssDataExists\n      detectionDate\n      isVulnerabilityNew\n      cweInfo {\n        title\n      }\n      packageInfo {\n        name\n        packageRepository\n        version\n      }\n      exploitablePath {\n        methodMatch {\n          fullName\n          line\n          namespace\n          shortName\n          sourceFile\n        }\n        methodSourceCall {\n          fullName\n          line\n          namespace\n          shortName\n          sourceFile\n        }\n      }\n      vulnerablePackagePath {\n        id\n        isDevelopment\n        isResolved\n        name\n        version\n        vulnerabilityRiskLevel\n      }\n      references {\n        comment\n        type\n        url\n      }\n      cvss2 {\n        attackComplexity\n        attackVector\n        authentication\n        availability\n        availabilityRequirement\n        baseScore\n        collateralDamagePotential\n        confidentiality\n        confidentialityRequirement\n        exploitCodeMaturity\n        integrityImpact\n        integrityRequirement\n        remediationLevel\n        reportConfidence\n        targetDistribution\n      }\n      cvss3 {\n        attackComplexity\n        attackVector\n        availability\n        availabilityRequirement\n        baseScore\n        confidentiality\n        confidentialityRequirement\n        exploitCodeMaturity\n        integrity\n        integrityRequirement\n        privilegesRequired\n        remediationLevel\n        reportConfidence\n        scope\n        userInteraction\n      }\n      cvss4 {\n        attackComplexity\n        attackVector\n        attackRequirements\n        baseScore\n        privilegesRequired\n        userInteraction\n        vulnerableSystemConfidentiality\n        vulnerableSystemIntegrity\n        vulnerableSystemAvailability\n        subsequentSystemConfidentiality\n        subsequentSystemIntegrity\n        subsequentSystemAvailability\n      }\n      pendingState\n      pendingChanges\n      packageState {\n        type\n        value\n      }\n      pendingScore\n      pendingSeverity\n      isScoreOverridden\n    }\n  }\n}",
+            "variables": {
+                "scanId": scan_id,
+                "take": 10,
+                "skip": 0,
+                "order": [
+                    { "score": "DESC" }
+                ],
+                "where": {
+                "packageInfo": {
+                    "and": [
+                    { "name": { "eq": vuln_id } },
+                    { "version": { "eq": version } }
+                    ]
+                }
+                },
+                "isExploitablePathEnabled": True
+            }
+        }
+
+        response = self.httpRequest.post_api_request(url, headers=headers, json=json_payload)
+        return response
+    
+    @ExceptionHandler.handle_exception
+    def get_image_id_graphql(self, scan_id, project_id):
+
+        endpoint = self.apiEndpoints.get_csec_vuln_details_graphql()
+        url = f"https://{self.tenant_url}{endpoint}"
+
+        headers = {
+            "accept": "application/json; version=1.0",
+            "authorization": f"Bearer {self.access_token}",
+            "Content-Type": "application/json; version=1.0",
+            "cx-authentication-type": "service",
+            "cx-project-id": project_id
+        }
+
+        json_payload = {
+            "query": "query GetTableFilesData ($scanId: UUID!, $take: Int, $skip: Int, $includeRuntimeData: Boolean) { images (scanId: $scanId, take: $take, skip: $skip, includeRuntimeData: $includeRuntimeData) { totalCount, items { baseImage, fixable, imageId, imageName, isImageMalicious, maliciousDescription, maliciousPackagesCount, pkgCount, vulnerablePkgCount, runtime, scanError, severity, size, status, snoozeDate, vulnerabilities { criticalCount, highCount, mediumCount, lowCount, noneCount }, groupsData { fileName, filePath } } } }",
+            "variables": {
+                "scanId": scan_id,
+                "take": 100,
+                "skip": 0,
+                "includeRuntimeData": False
+            }
+        }
+
+        response = self.httpRequest.post_api_request(url, headers=headers, json=json_payload)
+        return response
+
+    @ExceptionHandler.handle_exception
+    def get_csec_image_layer_graphql(self, scan_id, project_id, image_id):
+        endpoint = self.apiEndpoints.get_csec_vuln_details_graphql()
+        url = f"https://{self.tenant_url}{endpoint}"
+
+        headers = {
+            "accept": "application/json; version=1.0",
+            "authorization": f"Bearer {self.access_token}",
+            "Content-Type": "application/json; version=1.0",
+            "cx-authentication-type": "service",
+            "cx-project-id": project_id
+        }
+
+        json_payload = {
+            "query": "query GetImagesAndLayers ($scanId: UUID!, $imageId: String!) { imageLayers(scanId: $scanId, imageId: $imageId) { imageName severityLevel fixable layers { command layerId size severityLevel index } fromImages { imageName severity fixable layers { command layerId size severityLevel index } } } }",
+            "variables": {
+                "scanId": scan_id,
+                "imageId": image_id
+            }
+        }
+
+        response = self.httpRequest.post_api_request(url, headers=headers, json=json_payload)
+        return response
+    
+    @ExceptionHandler.handle_exception
+    def get_csec_image_remediations_graphql(self, scan_id, project_id, image_id):
+
+        endpoint = self.apiEndpoints.get_csec_vuln_details_graphql()
+        url = f"https://{self.tenant_url}{endpoint}"
+
+        headers = {
+            "accept": "application/json; version=1.0",
+            "authorization": f"Bearer {self.access_token}",
+            "Content-Type": "application/json; version=1.0",
+            "cx-authentication-type": "service",
+            "cx-project-id": project_id
+        }
+
+        json_payload = {
+            "query": "query GetImageRemediations ($scanId: UUID!, $imageId: String!) { imageRemediations(scanId: $scanId, imageId: $imageId) { lowVulnerabilitiesCount mediumVulnerabilitiesCount highVulnerabilitiesCount criticalVulnerabilitiesCount imageId minorRecommendedImages { imageId lowVulnerabilitiesCountDelta mediumVulnerabilitiesCountDelta highVulnerabilitiesCountDelta criticalVulnerabilitiesCountDelta } majorRecommendedImages { imageId lowVulnerabilitiesCountDelta mediumVulnerabilitiesCountDelta highVulnerabilitiesCountDelta criticalVulnerabilitiesCountDelta } alternativeRecommendedImages { imageId lowVulnerabilitiesCountDelta mediumVulnerabilitiesCountDelta highVulnerabilitiesCountDelta criticalVulnerabilitiesCountDelta } nextRecommendedImages { imageId lowVulnerabilitiesCountDelta mediumVulnerabilitiesCountDelta highVulnerabilitiesCountDelta criticalVulnerabilitiesCountDelta } notOutdatedRecommendedImages { imageId lowVulnerabilitiesCountDelta mediumVulnerabilitiesCountDelta highVulnerabilitiesCountDelta criticalVulnerabilitiesCountDelta } } }",
+            "variables": {
+                "scanId": scan_id,
+                "imageId": image_id
+            }
+        }
+
+        response = self.httpRequest.post_api_request(url, headers=headers, json=json_payload)
+        return response
+    
+    @ExceptionHandler.handle_exception
+    def get_csec_vulnerability_details_graphql(self, scan_id, project_id, image_id, package_id):
+
+        endpoint = self.apiEndpoints.get_csec_vuln_details_graphql()
+        url = f"https://{self.tenant_url}{endpoint}"
+
+        headers = {
+            "accept": "application/json; version=1.0",
+            "authorization": f"Bearer {self.access_token}",
+            "Content-Type": "application/json; version=1.0",
+            "cx-authentication-type": "service",
+            "cx-project-id": project_id
+        }
+
+        json_payload = {
+            "query": "query GetImagesVulnerabilities ($scanId: UUID!, $imageId: String, $take: Int, $skip: Int, $searchTerm: String, $order: [PackageVulnerabilityTypeSortInput!], $where: PackageVulnerabilityTypeFilterInput, $vulnerabilityFilter: VulnerabilityFilterInput) { imagesVulnerabilities (scanId: $scanId, imageId: $imageId, take: $take, skip: $skip, searchTerm: $searchTerm, order: $order, where: $where, vulnerabilityFilter: $vulnerabilityFilter) { totalCount items { packageName distribution type packageVersion packageId runtimeUsage isMalicious risksCount status snoozeDate id aggregatedRisks { critical high medium low none risksList { cve vulnerabilityLevel vulnerabilityScore description publicationDate fixedVersion state originalSeverityLevel } } binaryList { version name } } } }",
+            "variables": {
+                "scanId": scan_id,
+                "imageId": image_id,
+                "take": 10,
+                "skip": 0,
+                "searchTerm": "",
+                "order": [
+                { "isMalicious": "ASC" },
+                { "runtimeUsage": "ASC" },
+                { "aggregatedRisks": { "critical": "DESC", "high": "DESC", "medium": "DESC", "low": "DESC", "none": "DESC" } }
+                ],
+                "where": {
+                    "packageId": {
+                        "eq": package_id
+                    }
+                },
+                "vulnerabilityFilter": {
+                "fromScore": 0,
+                "toScore": 10
+                }
+            }
+        }
+
+        response = self.httpRequest.post_api_request(url, headers=headers, json=json_payload)
+        return response
+    
+    def get_tenant_url(self):
+        return self.tenant_url
+
+# -------------- Not being used ------------------
     
     @ExceptionHandler.handle_exception
     def get_scan_summary(self, access_token, scan_ids):
@@ -128,13 +335,6 @@ class CxApiActions:
         response = self.httpRequest.put_api_request(url, headers=headers, json=payload)
         return response
 
-
-
-
-
-
-    @ExceptionHandler.handle_exception
-    def get_tenant_url(self):
-        return self.tenant_url
+   
         
     

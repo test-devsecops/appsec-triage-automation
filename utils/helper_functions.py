@@ -29,3 +29,20 @@ class HelperFunctions:
         if all(char in string.printable for char in text):
             return True
         return False
+    
+    @staticmethod
+    def get_nested(data, keys, default=None):
+        """
+        Safely access nested dictionary keys.
+        
+        :param data: The dictionary to traverse.
+        :param keys: A list of keys representing the path.
+        :param default: Value to return if any key is missing.
+        :return: The value at the nested key or default.
+        """
+        for key in keys:
+            if isinstance(data, dict):
+                data = data.get(key, default)
+            else:
+                return default
+        return data

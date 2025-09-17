@@ -4,6 +4,38 @@ class CxApiEndpoints:
     def get_access_token(tenant_name):
         endpoint = f"/auth/realms/{tenant_name}/protocol/openid-connect/token"
         return endpoint
+    
+    @staticmethod
+    def get_sast_results():
+        endpoint = f"/api/sast-results"
+        return endpoint
+    
+    @staticmethod
+    def get_scan_details(scan_id):
+        endpoint = f"/api/scans/{scan_id}"
+        return endpoint
+    
+    @staticmethod
+    def get_query_descriptions():
+        endpoint = f"/api/queries/descriptions"
+        return endpoint
+    
+    @staticmethod
+    def get_vulnerability_details(cve_id):
+        endpoint = f"/api/sca/vulnerabilities/v1/{cve_id}"
+        return endpoint
+
+    @staticmethod
+    def get_sca_vuln_details_graphql():
+        endpoint = f"/api/sca/graphql/graphql"
+        return endpoint
+
+    @staticmethod
+    def get_csec_vuln_details_graphql():
+        endpoint = f"/api/containers/buffet/graphql"
+        return endpoint
+
+# -------------- Not being used ------------------
 
     @staticmethod
     def get_project_last_scan():
