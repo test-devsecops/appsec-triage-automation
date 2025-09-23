@@ -34,6 +34,21 @@ class CxApiEndpoints:
     def get_csec_vuln_details_graphql():
         endpoint = f"/api/containers/buffet/graphql"
         return endpoint
+    
+    @staticmethod
+    def get_dast_scan_info(scan_id):
+        endpoint = f"/api/dast/scans/scan/{scan_id}"
+        return endpoint
+    
+    @staticmethod
+    def get_dast_scan_result_detailed_info(result_id, scan_id):
+        endpoint = f"/api/dast/mfe-results/results/info/{result_id}/{scan_id}"
+        return endpoint
+
+    @staticmethod
+    def get_dast_env_info(env_id):
+        endpoint = f"/api/dast/scans/environment/{env_id}"
+        return endpoint
 
 # -------------- Not being used ------------------
 
