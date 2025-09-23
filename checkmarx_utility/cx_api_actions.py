@@ -22,7 +22,16 @@ class CxApiActions:
     
     @ExceptionHandler.handle_exception
     def get_sast_results(self, scan_id, vuln_id=None):
+        """
+        Fetch SAST results for one or more vulnerability IDs.
 
+        Args:
+            scan_id (str): The SAST scan ID.
+            vuln_id (str or list, optional): A single vulnerability ID or a list of IDs.
+
+        Returns:
+            Response object from the API request.
+        """
         endpoint = self.apiEndpoints.get_sast_results()
         url = f"https://{self.tenant_url}{endpoint}"
 
@@ -32,10 +41,14 @@ class CxApiActions:
             "Content-Type": "application/json; version=1.0"
         }
 
-        params = {
-            "scan-id": scan_id,
-            "result-id": vuln_id
-        }
+        # Support multiple result-id query params
+        if isinstance(vuln_id, list):
+            params = [("scan-id", scan_id)] + [("result-id", vid) for vid in vuln_id]
+        else:
+            params = {
+                "scan-id": scan_id,
+                "result-id": vuln_id
+            }
 
         response = self.httpRequest.get_api_request(url, headers=headers, params=params)
         return response
@@ -248,6 +261,60 @@ class CxApiActions:
     
     def get_tenant_url(self):
         return self.tenant_url
+    
+    @ExceptionHandler.handle_exception
+    def get_dast_scan_result_detailed_info(self, result_id, scan_id):
+        """
+        Fetch DAST scan results with multiple 'search' query parameters.
+
+        Args:
+            scan_id (str): The DAST scan ID.
+            result_category (list): List of search terms to filter results.
+
+        Returns:
+            Response object from the API request.
+        """
+        endpoint = self.apiEndpoints.get_dast_scan_result_detailed_info(result_id, scan_id)
+        url = f"https://{self.tenant_url}{endpoint}"
+
+        headers = {
+            "accept": "application/json; version=1.0",
+            "authorization": f"Bearer {self.access_token}",
+            "Content-Type": "application/json; version=1.0"
+        }
+
+        response = self.httpRequest.get_api_request(url, headers=headers)
+        return response
+    
+    @ExceptionHandler.handle_exception
+    def get_dast_scan_info(self, scan_id):
+        
+        endpoint = self.apiEndpoints.get_dast_scan_info(scan_id)
+        url = f"https://{self.tenant_url}{endpoint}"
+
+        headers = {
+            "accept": "application/json; version=1.0",
+            "authorization": f"Bearer {self.access_token}",
+            "Content-Type": "application/json; version=1.0"
+        }
+
+        response = self.httpRequest.get_api_request(url, headers=headers)
+        return response
+    
+    @ExceptionHandler.handle_exception
+    def get_dast_env_info(self, env_id):
+        
+        endpoint = self.apiEndpoints.get_dast_env_info(env_id)
+        url = f"https://{self.tenant_url}{endpoint}"
+
+        headers = {
+            "accept": "application/json; version=1.0",
+            "authorization": f"Bearer {self.access_token}",
+            "Content-Type": "application/json; version=1.0"
+        }
+
+        response = self.httpRequest.get_api_request(url, headers=headers)
+        return response
 
 # -------------- Not being used ------------------
     
@@ -334,7 +401,3 @@ class CxApiActions:
 
         response = self.httpRequest.put_api_request(url, headers=headers, json=payload)
         return response
-
-   
-        
-    
