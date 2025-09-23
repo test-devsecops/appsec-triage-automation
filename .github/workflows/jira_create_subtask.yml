@@ -13,7 +13,7 @@ on:
         type: string
 
 jobs:
-  run-dar-workflow:
+  update-jira-ticket:
     runs-on: ubuntu-latest
 
     # env:
@@ -39,8 +39,8 @@ jobs:
           python3 -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run DAR Script
+      - name: Run Jira Script
         run: |
-          python3 appsec_triage_get_vulnerability_details.py \
+          python3 appsec_triage_main.py \
             "${{ github.event.inputs.jira_issue }}" \
             "${{ github.event.inputs.scan_engine }}" \
