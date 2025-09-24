@@ -18,9 +18,9 @@ jobs:
 
     env:
       CX_TOKEN: ${{ secrets.CX_TOKEN }}
-      TENANT_NAME: ${{ vars.CX_TENANT_NAME }}
-      TENANT_IAM_URL: ${{ vars.CX_TENANT_IAM_URL }}
-      TENANT_URL: ${{ vars.CX_TENANT_URL }}
+      CX_TENANT_NAME: ${{ vars.CX_TENANT_NAME }}
+      CX_TENANT_IAM_URL: ${{ vars.CX_TENANT_IAM_URL }}
+      CX_TENANT_URL: ${{ vars.CX_TENANT_URL }}
       JIRA_PAT: ${{ secrets.JIRA_PAT }}
       JIRA_PROJECT_ID: ${{ vars.JIRA_PROJECT_ID }}
       JIRA_URL: ${{ vars.JIRA_URL }}
