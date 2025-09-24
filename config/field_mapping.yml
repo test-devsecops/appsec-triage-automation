@@ -1,0 +1,35 @@
+fields:
+  image_name : customfield_16941
+  url : customfield_16940
+  environment_name : customfield_16942
+  cve_description : customfield_16937
+  package_name_or_version : customfield_16930
+  epss_score : customfield_16933
+  cvss_score : customfield_16932
+  cve_number : customfield_16931
+  vulnerability_id_1: customfield_16805
+  vulnerability_id_2: customfield_16924
+  vulnerability_id_3: customfield_16925
+  vulnerability_id_4: customfield_16926
+  vulnerability_id_5: customfield_16927
+  triage_status: customfield_16929
+  scan_id: customfield_16802
+  justification: customfield_13802
+  status_dropdown: customfield_16508
+  branch_name: customfield_16507
+  severity: customfield_16506
+  project_name: customfield_16501
+  lbu: customfield_16500
+  vulnerability_name: customfield_16505
+  scan_type: customfield_16503
+  project_code: customfield_16502
+  cve_id: customfield_16803
+  package_name: customfield_16803
+  vulnerability: customfield_16805 # using vuln id 1 for subtask
+
+
+
+
+
+
+

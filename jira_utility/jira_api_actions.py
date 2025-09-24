@@ -9,6 +9,7 @@ from urllib.parse import urlencode
 import requests
 import base64
 import sys
+import json
 
 
 class JiraApiActions:
@@ -35,7 +36,43 @@ class JiraApiActions:
         return response
 
     @ExceptionHandler.handle_exception
-    def create_issue(self, fields_values):
+    def get_issue(self, issue_key):
+
+        endpoint = self.apiEndpoints.get_issue(issue_key)
+        url = f"https://{self.jira_url}{endpoint}"
+
+        headers = {
+            "Accept": "application/json",
+            "Authorization": f"Bearer {self.token}"
+        }
+
+        response = self.httpRequest.get_api_request(url, headers)
+        return response
+
+
+    @ExceptionHandler.handle_exception
+    def update_issue(self, added_payload, issue_key):
+        endpoint = self.apiEndpoints.update_issue(issue_key)
+        url = f"https://{self.jira_url}{endpoint}"
+
+        headers = {
+            "Accept": "application/json",
+            "Authorization": f"Bearer {self.token}"
+        }
+
+        payload = { 
+            "fields": {
+            }
+        }
+
+        payload["fields"].update(added_payload)
+        # print(json.dumps(payload))
+
+        response = self.httpRequest.put_api_request(url, headers=headers, json=payload)
+        return response
+
+    @ExceptionHandler.handle_exception
+    def create_subtask(self, added_payload):
 
         endpoint = self.apiEndpoints.create_issue()
         url = f"https://{self.jira_url}{endpoint}"
@@ -45,32 +82,21 @@ class JiraApiActions:
             "Authorization": f"Bearer {self.token}"
         }
 
-        description_text = ""
-        # # Format the description dictionary into a string. This is temporary and can be removed or changed in the future.
-        # description_text = "\n".join(
-        #     f"{key}: {value}" for key, value in fields_values['description'].items()
-        # )
-
-        payload = {
+        payload = { 
             "fields": {
                 "project": {
-                    "id": self.project_id
+                    "id": self.project_id 
                 },
+                
                 "issuetype": {
-                    "id": self.issuetype_id
+                    "name": "Sub-task"
                 },
-                "description": description_text,
-                "summary": fields_values["summary"],
-                "customfield_16500" : fields_values["lbu"],
-                "customfield_16501" : fields_values["project_name"],
-                "customfield_16704" : fields_values["application_name"],
-                "customfield_16504" : fields_values["scan_report_link"],
-                "customfield_16700" : fields_values["num_of_critical"],
-                "customfield_16701" : fields_values["num_of_high"],
-                "customfield_16702" : fields_values["num_of_medium"],
-                "customfield_16703" : fields_values["num_of_low"],
+                "description" : "Sub-task"
             }
         }
+
+        payload["fields"].update(added_payload)
+        # print(json.dumps(payload))
 
         response = self.httpRequest.post_api_request(url, headers=headers, json=payload)
         return response
