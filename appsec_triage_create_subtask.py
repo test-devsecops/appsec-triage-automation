@@ -209,7 +209,7 @@ def create_dast_subtask(api_action: JiraApiActions, data: dict, field_mapping: d
                 # "description" : desc,
                 "justification" : "Please input justification",
                 # will need to change to use from data itself, not hardcoded
-                "triage_status" : "False Positive",
+                "triage_status": {"value": "False Positive"},
                 "severity" : values.get("result_description").get("severity")
             }
 
