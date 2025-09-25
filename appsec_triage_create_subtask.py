@@ -195,21 +195,18 @@ def create_dast_subtask(api_action: JiraApiActions, data: dict, field_mapping: d
             desc = ""
             # print(json.dumps(values.get('result_description')))
 
-            for key, value in values.get("result_description").items():
-                if value in ("", []):
-                    continue
-                if key == 'attack' or 'path':
-                    continue
-                
-                elif key == 'description':
-                    desc += f"{value}\r\n"
-                else:
-                    desc += f"{key.capitalize()} : {value}\r\n"
+            # for key, value in values.get("result_description").items():
+            #     if value in ("", []):
+            #         continue
+            #     elif key == 'description':
+            #         desc += f"{value}\r\n"
+            #     else:
+            #         desc += f"{key.capitalize()} : {value}\r\n"
 
             vuln_payload = {
                 "summary": f"DAST | {values.get('result_category')}",
                 "url" : values.get("vulnerability_url"),
-                "description" : desc,
+                # "description" : desc,
                 "justification" : "Please input justification",
                 # will need to change to use from data itself, not hardcoded
                 "triage_status" : "False Positive",
