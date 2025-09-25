@@ -31,13 +31,13 @@ def main():
             jira_issue_fields = HelperFunctions.remove_all_null_key_values(jira_issue_fields)
         except Exception as e:
             log.error(f"Failed to fetch or process Jira issue data: {e}")
-            return
+            return 1
 
         try:
             field_map = load_map('config/field_mapping.yml')
         except Exception as e:
             log.error(f"Failed to load field mapping: {e}")
-            return
+            return 1
 
         # Extracting data to be readable
         parent_data = {}
@@ -74,6 +74,7 @@ def main():
                 log.info(f"Populating Jira successful")
             except Exception as e:
                 log.error(f"Error during SAST processing: {e}")
+                return 1
         elif scan_engine == 'SCA':
             try:
                 sca_jira = HelperFunctions.parse_sca_input(parent_data)
@@ -101,6 +102,7 @@ def main():
 
             except Exception as e:
                 log.error(f"Error during SCA processing: {e}")
+                return 1
         elif scan_engine == 'CSEC':
             try:
                 csec_jira = HelperFunctions.parse_csec_input(parent_data)
@@ -125,6 +127,7 @@ def main():
                 appsec_subtask.create_csec_subtask(jira_api_actions, csec_combined, field_map)
             except Exception as e:
                 log.error(f"Error during CSEC processing: {e}")
+                return 1
         elif scan_engine == 'DAST':
             try:
                 dast_jira = HelperFunctions.parse_dast_input(parent_data)
@@ -150,12 +153,15 @@ def main():
                 appsec_subtask.create_dast_subtask(jira_api_actions, dast_combined, field_map)
             except Exception as e:
                 log.error(f"Error during DAST processing: {e}")
+                return 1
         else:
             log.error(f"The {scan_engine} Scan type is not supported by this workflow automation.")
-            pass
+            return 1
 
     except Exception as e:
         log.error(f"Unexpected error: {e}")
+        return 1
 
 if __name__ == "__main__":
-    main()
+    import sys
+    sys.exit(main())

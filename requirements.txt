@@ -1,4 +1,4 @@
-requests
-dotenv
-pathlib
-pyyaml
+requests~=2.32
+dotenv~=1.1
+pathlib~=1.0
+pyyaml~=6.0
