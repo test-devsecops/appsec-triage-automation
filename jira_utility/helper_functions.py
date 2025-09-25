@@ -54,7 +54,13 @@ class HelperFunctions:
     @staticmethod
     def parse_dast_input(data: dict):
         try:
-            return data
+
+            urls = [v for k, v in data.items() if k.startswith("url")] 
+            formatted_data = {
+                "scan_id" : data.get("scan_id"),
+                "urls" : urls
+            }
+            return formatted_data
         except Exception as e:
             print(f"Error in parsing DAST: {e}")
             return None

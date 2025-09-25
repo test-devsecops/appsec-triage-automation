@@ -47,7 +47,7 @@ class Logger:
         self.logger.info(message)
 
     def error(self, message):
-        self.logger.error(message)
+        self.logger.error(message, exc_info=True)
 
     def warning(self, message):
         self.logger.warning(message)
