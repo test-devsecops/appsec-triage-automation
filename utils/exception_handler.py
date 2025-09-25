@@ -1,6 +1,7 @@
 import requests
 import time
 import functools
+import sys
 
 class ExceptionHandler:
     @staticmethod
@@ -21,6 +22,7 @@ class ExceptionHandler:
 
             if logger:
                 logger.error(msg)
+                return sys.exit(1)
             else:
                 print(msg)
             return None
