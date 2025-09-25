@@ -45,7 +45,7 @@ def create_sast_subtask(api_action: JiraApiActions, data: dict, field_mapping: d
                 "vulnerability": values.get('vulnerability_id'),
                 "vulnerability_name": values.get('vulnerability_name'),
                 "justification": values.get("justification"),
-                "triage_status": {"value": "False Positive"},
+                "triage_status": {"value": "Please select value"},
                 "description": desc
             }
 
@@ -102,7 +102,7 @@ def create_sca_subtask(api_action: JiraApiActions, data: dict, field_mapping: di
                 "cve_description": desc,
                 "epss_score" : str(values.get('epss_score')),
                 "justification" : "Please Input Justification",
-                "triage_status": {"value": "False Positive"},
+                "triage_status": {"value": "Please select value"},
                 # "description": values.get('cve_number')
             }
 
@@ -161,7 +161,7 @@ def create_csec_subtask(api_action: JiraApiActions, data: dict, field_mapping: d
                 "cve_description": desc,
                 "epss_score" : str(values.get('epss_score')),
                 "justification" : "Please Input Justification",
-                "triage_status": {"value": "False Positive"},
+                "triage_status": {"value": "Please select value"},
             }
 
             payload = main_payload | vuln_payload
@@ -195,21 +195,28 @@ def create_dast_subtask(api_action: JiraApiActions, data: dict, field_mapping: d
             desc = ""
             # print(json.dumps(values.get('result_description')))
 
-            # for key, value in values.get("result_description").items():
-            #     if value in ("", []):
-            #         continue
-            #     elif key == 'description':
-            #         desc += f"{value}\r\n"
-            #     else:
-            #         desc += f"{key.capitalize()} : {value}\r\n"
+            for key, value in values.get("result_description").items():
+                if value in ("", []):
+                    continue
+
+                if key == 'attack' or key == 'path':
+                    continue
+
+                if key == 'solution':
+                    desc += f"*{key.capitalize()}* :\r\n {value}\r\n"
+
+                elif key == 'description':
+                    desc += f"{value}\r\n"
+                else:
+                    desc += f"*{key.capitalize()}* : {value}\r\n"
 
             vuln_payload = {
                 "summary": f"DAST | {values.get('result_category')}",
                 "url" : values.get("vulnerability_url"),
-                # "description" : desc,
+                "description" : desc,
                 "justification" : "Please input justification",
                 # will need to change to use from data itself, not hardcoded
-                "triage_status": {"value": "False Positive"},
+                "triage_status": {"value": "Please select value"},
                 "severity" : values.get("result_description").get("severity")
             }
 
