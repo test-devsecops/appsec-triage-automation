@@ -2,6 +2,8 @@ import requests
 import sys
 
 class HttpRequests:
+    def __init__(self, logger=None):
+        self.logger = logger
 
     def post_api_request(self, url, headers=None, data=None, params=None, json=None):
 
@@ -14,11 +16,17 @@ class HttpRequests:
         # print("Request Headers:", response.request.headers)
         # print("Request Body:", response.request.body)
 
+        if self.logger:
+            self.logger.info(f"POST {url} - Status Code: {response.status_code}")
+
         valid_status_codes = [200, 201]
 
         # Check if the response status code is in the array
         if response.status_code in valid_status_codes:
-            return response.json()
+            if response.content and response.content.strip():
+                return response.json()
+            else:
+                return None
         else:
             response.raise_for_status()
 
@@ -33,11 +41,17 @@ class HttpRequests:
         # print("Request Headers:", response.request.headers)
         # print("Request Body:", response.request.body)
 
+        if self.logger:
+            self.logger.info(f"GET {url} - Status Code: {response.status_code}")
+
         valid_status_codes = [200, 201]
 
         # Check if the response status code is in the array
         if response.status_code in valid_status_codes:
-            return response.json()
+            if response.content and response.content.strip():
+                return response.json()
+            else:
+                return None
         else:
             response.raise_for_status()
     
@@ -52,11 +66,17 @@ class HttpRequests:
         # print("Request Headers:", response.request.headers)
         # print("Request Body:", response.request.body)
 
+        if self.logger:
+            self.logger.info(f"PATCH {url} - Status Code: {response.status_code}")
+
         valid_status_codes = [200, 201]
 
         # Check if the response status code is in the array
         if response.status_code in valid_status_codes:
-            return response.json()
+            if response.content and response.content.strip():
+                return response.json()
+            else:
+                return None
         else:
             response.raise_for_status()
 
@@ -71,6 +91,9 @@ class HttpRequests:
         # print("Request Headers:", response.request.headers)
         # print("Request Body:", response.request.body)
 
+        if self.logger:
+            self.logger.info(f"DELETE {url} - Status Code: {response.status_code}")
+
         valid_status_codes = [200, 204]  # Typically for successful deletion
 
         # Check if the response status code is in the array
@@ -81,7 +104,7 @@ class HttpRequests:
             response.raise_for_status()
     
     def put_api_request(self, url, headers=None, data=None, params=None, json=None):
-        
+
         response = requests.put(url, headers=headers, data=data, params=params, json=json, timeout=120)
 
         # Debug print statements
@@ -89,6 +112,9 @@ class HttpRequests:
         # print("Status Code:", response.status_code)
         # print("Request Headers:", response.request.headers)
         # print("Request Body:", response.request.body)
+
+        if self.logger:
+            self.logger.info(f"PUT {url} - Status Code: {response.status_code}")
 
         valid_status_codes = [200, 204]  # 204 is for successful update with no content
 

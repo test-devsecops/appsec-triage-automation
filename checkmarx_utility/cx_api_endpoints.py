@@ -49,6 +49,11 @@ class CxApiEndpoints:
     def get_dast_env_info(env_id):
         endpoint = f"/api/dast/scans/environment/{env_id}"
         return endpoint
+    
+    @staticmethod
+    def sast_predicates():
+        endpoint = f"/api/sast-results-predicates/"
+        return endpoint
 
 # -------------- Not being used ------------------
 
