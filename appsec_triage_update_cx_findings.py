@@ -10,6 +10,12 @@ import os
 import sys
 import json
 
+def _get_cx_state_and_severity(triage_values_mapping, triage_status):
+    triage_value = triage_values_mapping.get(triage_status, {})
+    cx_state = triage_value.get('state')
+    cx_severity = triage_value.get('severity', None)
+    return cx_state, cx_severity
+
 def main():
     """
     Main entry point for vulnerability details extraction.
@@ -19,9 +25,8 @@ def main():
     TEST_SCAN_ID = "e5421550-fdc2-4b13-b85d-866f136a751c"
     TEST_VULN_ID = "ysTAGGDe/mRAJty/2BEXEUhNeTo="
     TEST_PACKAGE_NAME = "libc-bin:2.36-9+deb12u10" #"multer 1.4.5-lts.2"
-    TEST_SEVERITY = "MEDIUM"
-    TEST_STATE = "CONFIRMED"
-    TEST_COMMENT = "This is a test comment"
+    TEST_TRIAGE_STATUS = "Downgrade to High" #"False Positive" #"Downgrade to High", "Downgrade to Medium", "Downgrade to Low"
+    TEST_COMMENT = "This is a test comment 2"
     
     # DAST
     TEST_RESULTS_URL = [
@@ -44,6 +49,14 @@ def main():
     cx_api_actions = CxApiActions(access_token=access_token, logger=log)
     helper = HelperFunctions()
 
+    # JIRA to CX Mapping
+    triage_values_mapping = {
+        "False Positive": {"state": "NOT_EXPLOITABLE"},
+        "Downgrade to High": {"state": "CONFIRMED", "severity": "HIGH"},
+        "Downgrade to Medium": {"state": "CONFIRMED", "severity": "MEDIUM"},
+        "Downgrade to Low": {"state": "CONFIRMED", "severity": "LOW"},
+    }
+
     if scan_type == SCAN_TYPE_DAST:
         log.info(f"Scan Type: {scan_type}")
         
@@ -64,12 +77,14 @@ def main():
             if scan_results is None:
                 log.error(f"Scan ID {TEST_SCAN_ID} is empty or does not exist")
                 return
+            
+            cx_state, cx_severity = _get_cx_state_and_severity(triage_values_mapping, TEST_TRIAGE_STATUS)
 
             for result in scan_results.get('results'):
                 similarity_id = result.get('similarityID')
                 log.info(f"Similarity ID: {similarity_id}")
                 
-                sast_predicate_response = cx_api_actions.post_sast_predicates(similarity_id, project_id, scan_id, TEST_SEVERITY, TEST_STATE, TEST_COMMENT)
+                sast_predicate_response = cx_api_actions.post_sast_predicates(similarity_id, project_id, scan_id, cx_severity, cx_state, TEST_COMMENT)
 
                 # Expecting None 
                 if sast_predicate_response is None:
