@@ -1,6 +1,8 @@
 import requests
 import time
 import functools
+import sys
+import traceback
 
 class ExceptionHandler:
     @staticmethod
@@ -12,17 +14,28 @@ class ExceptionHandler:
 
             try:
                 return func(*args, **kwargs)
-            except requests.exceptions.HTTPError as err:
-                msg = f"HTTP Error: {err}"
-            except requests.exceptions.RequestException as err:
-                msg = f"RequestException error occurred: {err}"
             except Exception as err:
-                msg = f"An unexpected error occurred: {err}"
-
-            if logger:
-                logger.error(msg)
-            else:
-                print(msg)
+                exc_type, exc_value, exc_tb = sys.exc_info()
+                tb = traceback.extract_tb(exc_tb)
+                if tb:
+                    last_frame = tb[-1]
+                    filename = last_frame.filename
+                    lineno = last_frame.lineno
+                    funcname = last_frame.name
+                else:
+                    filename = funcname = lineno = "Unknown"
+                if isinstance(err, requests.exceptions.HTTPError):
+                    err_type = "HTTP Error"
+                elif isinstance(err, requests.exceptions.RequestException):
+                    err_type = "RequestException"
+                else:
+                    err_type = "Unexpected Error"
+                msg = (f"{err_type}: {err} | "
+                       f"File: {filename} | Function: {funcname} | Line: {lineno}")
+                if logger:
+                    logger.error(msg)
+                else:
+                    print(msg)
             return None
         return wrapper
 
@@ -38,12 +51,24 @@ class ExceptionHandler:
                 while attempt < retries:
                     try:
                         return func(*args, **kwargs)
-                    except requests.exceptions.HTTPError as err:
-                        msg = f"HTTP Error: {err}"
-                    except requests.exceptions.RequestException as err:
-                        msg = f"RequestException error occurred: {err}"
                     except Exception as err:
-                        msg = f"An unexpected error occurred: {err}"
+                        exc_type, exc_value, exc_tb = sys.exc_info()
+                        tb = traceback.extract_tb(exc_tb)
+                        if tb:
+                            last_frame = tb[-1]
+                            filename = last_frame.filename
+                            lineno = last_frame.lineno
+                            funcname = last_frame.name
+                        else:
+                            filename = funcname = lineno = "Unknown"
+                        if isinstance(err, requests.exceptions.HTTPError):
+                            err_type = "HTTP Error"
+                        elif isinstance(err, requests.exceptions.RequestException):
+                            err_type = "RequestException"
+                        else:
+                            err_type = "Unexpected Error"
+                        msg = (f"{err_type}: {err} | "
+                               f"File: {filename} | Function: {funcname} | Line: {lineno}")
 
                     attempt += 1
                     if logger:

@@ -12,7 +12,7 @@ import sys
 class CxApiActions:
 
     def __init__(self, access_token, logger, configEnvironment=None):
-        self.httpRequest = HttpRequests()
+        self.httpRequest = HttpRequests(logger)
         self.apiEndpoints = CxApiEndpoints()
         self.logger = logger
         self.access_token = access_token
@@ -314,6 +314,32 @@ class CxApiActions:
         }
 
         response = self.httpRequest.get_api_request(url, headers=headers)
+        return response
+    
+    @ExceptionHandler.handle_exception
+    def post_sast_predicates(self, similarity_id, project_id, scan_id, severity, state, comment):
+
+        endpoint = self.apiEndpoints.sast_predicates()
+        url = f"https://{self.tenant_url}{endpoint}"
+
+        headers = {
+            "accept": "application/json; version=1.0",
+            "authorization": f"Bearer {self.access_token}",
+            "Content-Type": "application/json; version=1.0"
+        }
+
+        json_payload = [
+            {
+                "similarityId": str(similarity_id),
+                "projectId": project_id,
+                "scanId": scan_id,
+                "severity": severity,
+                "state": state,
+                "comment": comment
+            }
+        ]
+
+        response = self.httpRequest.post_api_request(url, headers=headers, json=json_payload)
         return response
 
 # -------------- Not being used ------------------
