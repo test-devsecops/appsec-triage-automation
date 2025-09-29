@@ -301,6 +301,37 @@ class CxApiActions:
         response = self.httpRequest.post_api_request(url, headers=headers, json=json_payload)
         return response
     
+    @ExceptionHandler.handle_exception
+    def post_csec_vulnerability_triage_update(self, state, severity, score, comment, scan_id, project_id, vuln_item_id, cve_id):
+
+        endpoint = self.apiEndpoints.csec_vulnerability_triage_update()
+        url = f"https://{self.tenant_url}{endpoint}"
+
+        headers = {
+            "accept": "application/json; version=1.0",
+            "authorization": f"Bearer {self.access_token}",
+            "Content-Type": "application/json; version=1.0"
+        }
+
+        json_payload = {
+            "state":state,
+            "severity":severity,
+            "score":score,
+            "comment": comment,
+            "scanId":scan_id,
+            "projectId":project_id,
+            "triages":[
+                {
+                    "packageId": vuln_item_id,
+                    "cveId": cve_id
+                }
+            ],
+            "group":"vulnerabilities"
+        }
+
+        response = self.httpRequest.post_api_request(url, headers=headers, json=json_payload)
+        return response
+    
     def get_tenant_url(self):
         return self.tenant_url
     

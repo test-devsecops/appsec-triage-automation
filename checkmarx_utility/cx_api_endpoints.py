@@ -59,6 +59,11 @@ class CxApiEndpoints:
     def sca_management_of_risk():
         endpoint = f"/api/sca/management-of-risk/package-vulnerabilities"
         return endpoint
+    
+    @staticmethod
+    def csec_vulnerability_triage_update():
+        endpoint = f"/api/containers/triage/triage/vulnerability-update"
+        return endpoint
 
 # -------------- Not being used ------------------
 
