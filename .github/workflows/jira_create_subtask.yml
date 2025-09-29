@@ -1,4 +1,4 @@
-name: Update Jira Ticket
+name: Update Jira Ticket - Ref#${{ github.run_number }}
 
 on:
   workflow_dispatch:
@@ -52,3 +52,4 @@ jobs:
           python3 appsec_triage_main.py \
             "${{ github.event.inputs.jira_issue }}" \
             "${{ github.event.inputs.scan_engine }}" \
+            "${{ github.run_number }}"

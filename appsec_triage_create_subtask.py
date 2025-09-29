@@ -154,7 +154,7 @@ def create_csec_subtask(api_action: JiraApiActions, data: dict, field_mapping: d
                     desc += f"{key.capitalize()} : {value}\r\n"
 
             vuln_payload = {
-                "summary": f"SCA | {values.get('cve_number')}",
+                "summary": f"CSEC | {values.get('cve_number')}",
                 "image_name" : package_info.get("image_name"),
                 "cve_number": values.get('cve_number'),
                 "cvss_score": str(values.get('cvss_score')),
