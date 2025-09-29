@@ -1,5 +1,5 @@
 name: Appsec Triage - Update Jira Ticket 
-run-name: Jira Update - Ref#${{ github.run_number }} ${{ github.event.inputs.jira_issue && format('({0})', github.event.inputs.jira_issue) || '' }}
+run-name: Jira Update - ${{ github.event.inputs.jira_issue && format('({0})', github.event.inputs.jira_issue) || '' }}
 
 on:
   workflow_dispatch:
@@ -53,4 +53,3 @@ jobs:
           python3 appsec_triage_main.py \
             "${{ github.event.inputs.jira_issue }}" \
             "${{ github.event.inputs.scan_engine }}" \
-            "${{ github.run_number }}"

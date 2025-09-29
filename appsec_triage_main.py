@@ -28,15 +28,15 @@ def main():
         )
         parser.add_argument("jira_issue", help="Jira Issue Key e.g. ABC-123")
         parser.add_argument("scan_engine_type", help="Scan Engine Types e.g SAST, SCA, CSEC, DAST")
-        parser.add_argument("reference_num", nargs="?", default="", help="Reference Number for debugging purposes (optional, used by GitHub Actions)")
+        # parser.add_argument("reference_num", nargs="?", default="", help="Reference Number for debugging purposes (optional, used by GitHub Actions)")
         args = parser.parse_args()
         jira_issue = args.jira_issue
         scan_engine = args.scan_engine_type
-        reference_number = args.reference_num
+        # reference_number = args.reference_num
 
         print(f"Jira issue: {jira_issue}")
         print(f"Scan Engine: {scan_engine}")
-        print(f"Ref Number: {reference_number if reference_number else 'N/A'}")
+        # print(f"Ref Number: {reference_number if reference_number else 'N/A'}")
 
         jira_config_environment = "JIRA-EIS"
         jira_api_actions = JiraApiActions(jira_config_environment)
