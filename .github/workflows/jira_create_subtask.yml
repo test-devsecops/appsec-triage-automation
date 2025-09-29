@@ -1,4 +1,5 @@
-name: Update Jira Ticket - Ref#${{ github.run_number }}
+name: Appsec Triage - Update Jira Ticket 
+run-name: Jira Update - Ref#${{ github.run_number }} ${{ github.event.inputs.jira_issue && format('({0})', github.event.inputs.jira_issue) || '' }}
 
 on:
   workflow_dispatch:
