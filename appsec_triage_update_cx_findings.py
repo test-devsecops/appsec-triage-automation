@@ -4,7 +4,6 @@ from checkmarx_utility.cx_token_manager import AccessTokenManager
 from utils.helper_functions import HelperFunctions
 
 from utils.logger import Logger
-from urllib.parse import urlparse, parse_qs
 
 import os
 import sys
@@ -22,11 +21,16 @@ def main():
     """
     # ------------- JIRA AUTOMATION PAYLOAD TESTING VARIABLES ----------------- #
 
-    TEST_SCAN_ID = "e5421550-fdc2-4b13-b85d-866f136a751c"
-    TEST_VULN_ID = "ysTAGGDe/mRAJty/2BEXEUhNeTo="
-    TEST_PACKAGE_NAME = "libc-bin:2.36-9+deb12u10" #"multer 1.4.5-lts.2"
-    TEST_TRIAGE_STATUS = "Downgrade to High" #"False Positive" #"Downgrade to High", "Downgrade to Medium", "Downgrade to Low"
+    TEST_TRIAGE_STATUS = "Downgrade to Medium" #"False Positive" #"Downgrade to High", "Downgrade to Medium", "Downgrade to Low"
     TEST_COMMENT = "This is a test comment 2"
+
+    TEST_SCAN_ID = "e5421550-fdc2-4b13-b85d-866f136a751c"
+    TEST_SAST_VULN_ID = "ysTAGGDe/mRAJty/2BEXEUhNeTo="
+
+    TEST_SCA_PACKAGE_NAME = "multer 1.4.5-lts.2" #"libc-bin:2.36-9+deb12u10" #"multer 1.4.5-lts.2"
+    TEST_SCA_CVE_ID = "CVE-2025-47935"
+
+    TEST_CSEC_PACKAGE_NAME = "libc-bin:2.36-9+deb12u10"
     
     # DAST
     TEST_RESULTS_URL = [
@@ -39,7 +43,7 @@ def main():
     SCAN_TYPE_CSEC = "CSEC"
     SCAN_TYPE_DAST = "DAST"
 
-    scan_type = SCAN_TYPE_SAST  # Change as needed for testing
+    scan_type = SCAN_TYPE_SCA  # Change as needed for testing
 
     # ------------- JIRA AUTOMATION PAYLOAD TESTING VARIABLES ----------------- #
 
@@ -48,14 +52,6 @@ def main():
     access_token = access_token_manager.get_valid_token()
     cx_api_actions = CxApiActions(access_token=access_token, logger=log)
     helper = HelperFunctions()
-
-    # JIRA to CX Mapping
-    triage_values_mapping = {
-        "False Positive": {"state": "NOT_EXPLOITABLE"},
-        "Downgrade to High": {"state": "CONFIRMED", "severity": "HIGH"},
-        "Downgrade to Medium": {"state": "CONFIRMED", "severity": "MEDIUM"},
-        "Downgrade to Low": {"state": "CONFIRMED", "severity": "LOW"},
-    }
 
     if scan_type == SCAN_TYPE_DAST:
         log.info(f"Scan Type: {scan_type}")
@@ -73,12 +69,20 @@ def main():
         if scan_type == SCAN_TYPE_SAST:
             log.info(f"Scan Type: {scan_type}")
 
-            scan_results = cx_api_actions.get_sast_results(TEST_SCAN_ID, TEST_VULN_ID)
+            # JIRA to CX Mapping
+            sast_triage_values_mapping = {
+                "False Positive": {"state": "NOT_EXPLOITABLE"},
+                "Downgrade to High": {"state": "CONFIRMED", "severity": "HIGH"},
+                "Downgrade to Medium": {"state": "CONFIRMED", "severity": "MEDIUM"},
+                "Downgrade to Low": {"state": "CONFIRMED", "severity": "LOW"},
+            }
+
+            scan_results = cx_api_actions.get_sast_results(TEST_SCAN_ID, TEST_SAST_VULN_ID)
             if scan_results is None:
                 log.error(f"Scan ID {TEST_SCAN_ID} is empty or does not exist")
                 return
             
-            cx_state, cx_severity = _get_cx_state_and_severity(triage_values_mapping, TEST_TRIAGE_STATUS)
+            cx_state, cx_severity = _get_cx_state_and_severity(sast_triage_values_mapping, TEST_TRIAGE_STATUS)
 
             for result in scan_results.get('results'):
                 similarity_id = result.get('similarityID')
@@ -88,13 +92,42 @@ def main():
 
                 # Expecting None 
                 if sast_predicate_response is None:
-                    log.info(f"Successfully updated the state and severity of Vulnerability ID: {TEST_VULN_ID}")
+                    log.info(f"Successfully updated the state and severity of Vulnerability ID: {TEST_SAST_VULN_ID}")
                 else:
-                    log.error(f"Failed to update the state and severity of Vulnerability ID: {TEST_VULN_ID}")
+                    log.error(f"Failed to update the state and severity of Vulnerability ID: {TEST_SAST_VULN_ID}")
 
         elif scan_type == SCAN_TYPE_SCA:
             log.info(f"Scan Type: {scan_type}")
+            ''' Data Required:
+                1. SCAN ID
+                2. SCA PACKAGE NAME
+                3. CVE ID
+                4. TRIAGE STATUS
+                4. COMMENT
+            '''
+            # JIRA to CX Mapping
+            sca_triage_values_mapping = {
+                "False Positive": {"state": "NotExploitable"},
+                "Downgrade to High": {"state": "Confirmed", "severity": "7"},
+                "Downgrade to Medium": {"state": "Confirmed", "severity": "4"},
+                "Downgrade to Low": {"state": "Confirmed", "severity": "0.1"},
+            }
+
+            package_name, package_version = helper.set_package_and_version(TEST_SCA_PACKAGE_NAME)
+            cx_state, cx_severity = _get_cx_state_and_severity(sca_triage_values_mapping, TEST_TRIAGE_STATUS)
+
+            sca_vuln_details = cx_api_actions.get_sca_vulnerability_details_with_CVE_graphql(scan_id, project_id, package_name, package_version, TEST_SCA_CVE_ID)
+            cve_details = helper.get_nested(sca_vuln_details, ['data', 'vulnerabilitiesRisksByScanId', 'items'])
+            package_repo = cve_details[0].get('packageInfo').get('packageRepository')
+
+            change_state_action  = cx_api_actions.post_sca_management_of_risk(package_name, package_version, package_repo, TEST_SCA_CVE_ID, project_id, 'ChangeState', cx_state, TEST_COMMENT)
+            change_state_action  = cx_api_actions.post_sca_management_of_risk(package_name, package_version, package_repo, TEST_SCA_CVE_ID, project_id, 'ChangeScore', cx_severity, TEST_COMMENT)
             
+            # Expecting None 
+            if change_state_action is None and change_state_action is None:
+                log.info(f"Successfully updated the state and severity of Package: {TEST_SCA_PACKAGE_NAME}")
+            else:
+                log.error(f"Failed to update the state and severity of Package: {TEST_SCA_PACKAGE_NAME}")
 
         elif scan_type == SCAN_TYPE_CSEC:
             log.info(f"Scan Type: {scan_type}")

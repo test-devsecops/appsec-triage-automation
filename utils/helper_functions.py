@@ -46,3 +46,12 @@ class HelperFunctions:
             else:
                 return default
         return data
+    
+    @staticmethod
+    def set_package_and_version(package_version: str) -> tuple[str, str]:
+        """
+        Splits a package string into name and version for SCA.
+        Example: 'multer 1.4.5-lts.2' -> ('multer', '1.4.5-lts.2')
+        """
+        name, version = package_version.rsplit(" ", 1)
+        return name, version

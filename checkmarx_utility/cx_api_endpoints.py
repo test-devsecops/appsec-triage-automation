@@ -54,6 +54,11 @@ class CxApiEndpoints:
     def sast_predicates():
         endpoint = f"/api/sast-results-predicates/"
         return endpoint
+    
+    @staticmethod
+    def sca_management_of_risk():
+        endpoint = f"/api/sca/management-of-risk/package-vulnerabilities"
+        return endpoint
 
 # -------------- Not being used ------------------
 
