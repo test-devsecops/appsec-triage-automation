@@ -49,6 +49,21 @@ class CxApiEndpoints:
     def get_dast_env_info(env_id):
         endpoint = f"/api/dast/scans/environment/{env_id}"
         return endpoint
+    
+    @staticmethod
+    def sast_predicates():
+        endpoint = f"/api/sast-results-predicates/"
+        return endpoint
+    
+    @staticmethod
+    def sca_management_of_risk():
+        endpoint = f"/api/sca/management-of-risk/package-vulnerabilities"
+        return endpoint
+    
+    @staticmethod
+    def csec_vulnerability_triage_update():
+        endpoint = f"/api/containers/triage/triage/vulnerability-update"
+        return endpoint
 
 # -------------- Not being used ------------------
 
