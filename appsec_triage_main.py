@@ -8,13 +8,20 @@ from utils.logger import Logger
 import json
 
 
-def _exception_update_description(jira_api_actions : JiraApiActions, jira_issue: str, log: Logger):
-    description = "[ERROR] Please check Github Actions for error message."
+def _exception_update_description(jira_api_actions: JiraApiActions, jira_issue: str, log: Logger, scan_id: str = None, error_message: str = None):
+    if scan_id and error_message:
+        description = f"[ERROR] Failed to fetch scan details for scan_id: {scan_id}. Error: {error_message}."
+    elif scan_id:
+        description = f"[ERROR] Failed to fetch scan details for scan_id: {scan_id}."
+    else:
+        description = "[ERROR] An error occurred."
+
     added_payload = {
-        'description' : description
+        'description': description
     }
     try:
-        jira_api_actions.update_issue(added_payload,jira_issue)
+        jira_api_actions.update_issue(added_payload, jira_issue)
+        log.info(f"Updated Ticket {jira_issue} with error.")
     except Exception as e:
         log.error(f"Failed to update issue with error : {e}")
 
@@ -47,7 +54,7 @@ def main():
             jira_issue_fields = HelperFunctions.remove_all_null_key_values(jira_issue_fields)
         except Exception as e:
             log.error(f"Failed to fetch or process Jira issue data: {e}")
-            _exception_update_description(jira_api_actions,jira_issue,log)
+            _exception_update_description(jira_api_actions, jira_issue, log)
             return 1
 
         try:
@@ -55,7 +62,7 @@ def main():
             user_type = load_map('config/user_type.yml',parent_field='user_type')
         except Exception as e:
             log.error(f"Failed to load yaml mapping: {e}")
-            _exception_update_description(jira_api_actions,jira_issue,log)
+            _exception_update_description(jira_api_actions, jira_issue, log)
             return 1
 
         # Extracting data to be readable
@@ -98,9 +105,13 @@ def main():
                 # Create subtasks
                 appsec_subtask.create_sast_subtask(jira_api_actions, sast_combined, field_map)
                 log.info(f"Populating Jira successful")
+            except TypeError as e:
+                log.error(f"SAST details error: {e}")
+                _exception_update_description(jira_api_actions, jira_issue, log, scan_id=parent_data.get('scan_id'), error_message=str(e))
+                return 1
             except Exception as e:
                 log.error(f"Error during SAST processing: {e}")
-                _exception_update_description(jira_api_actions,jira_issue,log)
+                _exception_update_description(jira_api_actions, jira_issue, log, scan_id=parent_data.get('scan_id'))
                 return 1
         elif scan_engine == 'SCA':
             try:
@@ -137,9 +148,13 @@ def main():
                 # Create subtasks
                 appsec_subtask.create_sca_subtask(jira_api_actions, sca_combined, field_map)
 
+            except TypeError as e:
+                log.error(f"SCA details error: {e}")
+                _exception_update_description(jira_api_actions, jira_issue, log, scan_id=parent_data.get('scan_id'), error_message=str(e))
+                return 1
             except Exception as e:
                 log.error(f"Error during SCA processing: {e}")
-                _exception_update_description(jira_api_actions,jira_issue,log)
+                _exception_update_description(jira_api_actions, jira_issue, log, scan_id=parent_data.get('scan_id'))
                 return 1
         elif scan_engine == 'CSEC':
             try:
@@ -174,9 +189,13 @@ def main():
 
                 # Create subtasks
                 appsec_subtask.create_csec_subtask(jira_api_actions, csec_combined, field_map)
+            except TypeError as e:
+                log.error(f"CSEC details error: {e}")
+                _exception_update_description(jira_api_actions, jira_issue, log, scan_id=parent_data.get('scan_id'), error_message=str(e))
+                return 1
             except Exception as e:
                 log.error(f"Error during CSEC processing: {e}")
-                _exception_update_description(jira_api_actions,jira_issue,log)
+                _exception_update_description(jira_api_actions, jira_issue, log, scan_id=parent_data.get('scan_id'))
                 return 1
         elif scan_engine == 'DAST':
             try:
@@ -209,9 +228,13 @@ def main():
                 jira_api_actions.update_issue(parenttask_to_jira_keys, jira_issue)
 
                 appsec_subtask.create_dast_subtask(jira_api_actions, dast_combined, field_map)
+            except TypeError as e:
+                log.error(f"DAST details error: {e}")
+                _exception_update_description(jira_api_actions, jira_issue, log, scan_id=parent_data.get('scan_id'), error_message=str(e))
+                return 1
             except Exception as e:
                 log.error(f"Error during DAST processing: {e}")
-                _exception_update_description(jira_api_actions,jira_issue,log)
+                _exception_update_description(jira_api_actions, jira_issue, log, scan_id=parent_data.get('scan_id'))
                 return 1
         else:
             log.error(f"The {scan_engine} Scan type is not supported by this workflow automation.")
