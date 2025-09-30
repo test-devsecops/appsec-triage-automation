@@ -446,6 +446,30 @@ class CxApiActions:
 
         response = self.httpRequest.post_api_request(url, headers=headers, json=json_payload)
         return response
+    
+    @ExceptionHandler.handle_exception
+    def post_dast_result_update(self, environment_id, result_ids : list, scan_id, severity, state, note):
+
+        endpoint = self.apiEndpoints.dast_result_triage_update()
+        url = f"https://{self.tenant_url}{endpoint}"
+
+        headers = {
+            "accept": "application/json; version=1.0",
+            "authorization": f"Bearer {self.access_token}",
+            "Content-Type": "application/json; version=1.0"
+        }
+
+        json_payload = {
+            "environment_id": environment_id,
+            "similarityID2": result_ids,
+            "scan_id": scan_id,
+            "severity":severity,
+            "state":state,
+            "note":note
+        }
+
+        response = self.httpRequest.post_api_request(url, headers=headers, json=json_payload)
+        return response
 
 # -------------- Not being used ------------------
     
