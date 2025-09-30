@@ -26,7 +26,7 @@ def main():
 
     TEST_TRIAGE_STATUS = "Downgrade to High" #"False Positive" #"Downgrade to High", "Downgrade to Medium", "Downgrade to Low"
     TEST_COMMENT = "This is a test comment 2"
-    TEST_SCAN_ID = "1b5b040b-f8ba-4927-827f-3b63d4d2452a"
+    TEST_SCAN_ID = "0b14a69a-a6db-470c-ae75-190a45446859" #"e5421550-fdc2-4b13-b85d-866f136a751c"
 
     # SAST
     TEST_SAST_VULN_ID = "ysTAGGDe/mRAJty/2BEXEUhNeTo="
@@ -47,7 +47,7 @@ def main():
     SCAN_TYPE_CSEC = "CSEC"
     SCAN_TYPE_DAST = "DAST"
 
-    scan_type = SCAN_TYPE_DAST  # Change as needed for testing
+    scan_type = SCAN_TYPE_CSEC  # Change as needed for testing
 
     # ------------- JIRA AUTOMATION PAYLOAD TESTING VARIABLES ----------------- #
 
