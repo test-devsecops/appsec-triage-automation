@@ -1,28 +1,46 @@
 import os
 import sys
 import configparser
-from dotenv import load_dotenv
-from pathlib import Path
 
 class Config:
+    
+    def __init__(self, config_file=None):
+        """Load from environment variables first, fallback to config file."""
+        env_token = os.getenv('CX_TOKEN')
+        env_tenant_name = os.getenv('CX_TENANT_NAME')
+        env_iam_url = os.getenv('CX_TENANT_IAM_URL')
+        env_tenant_url = os.getenv('CX_TENANT_URL')
 
-    def __init__(self):
-        """Initialize and load configuration from environment variables."""
+        if all([env_token, env_tenant_name, env_iam_url, env_tenant_url]):
+            self.token = env_token
+            self.tenant_name = env_tenant_name
+            self.tenant_iam_url = env_iam_url
+            self.tenant_url = env_tenant_url
+            self.use_env = True
+            return
 
-        # Load the .env file from the same directory as the script. Uncomment this when running the scripts on your local machine
-        env_path = Path(__file__).resolve().parent / '.env'
-        load_dotenv(dotenv_path=env_path)
+        # Fallback to config file - Default config file will be config_dev.env
+        self.use_env = False
+        self.config_file = config_file or os.path.join(os.path.dirname(__file__), '..', 'config_dev.env')
+        self.config = configparser.ConfigParser()
+        self.config.read(self.config_file)
 
-        self.token = os.getenv('CX_TOKEN')
-        self.tenant_name = os.getenv('TENANT_NAME')
-        self.tenant_iam_url = os.getenv('TENANT_IAM_URL')
-        self.tenant_url = os.getenv('TENANT_URL')
+    def get_config(self, section='CX-PRU-NPROD'):
+        """Return config values from environment or config file."""
+        if self.use_env:
+            return self.token, self.tenant_name, self.tenant_iam_url, self.tenant_url
 
-        missing = [var for var in ['CX_TOKEN', 'TENANT_NAME', 'TENANT_IAM_URL', 'TENANT_URL'] if os.getenv(var) is None]
-        if missing:
-            print(f"Error: Missing required environment variables: {', '.join(missing)}")
+        if section not in self.config:
+            print(f"Error: Section [{section}] not found in {self.config_file}")
             sys.exit(1)
 
-    def get_config(self):
-        """Return the loaded configuration values."""
-        return self.token, self.tenant_name, self.tenant_iam_url, self.tenant_url
+        try:
+            token = self.config[section]['CX_TOKEN']
+            tenant_name = self.config[section]['TENANT_NAME']
+            tenant_iam_url = self.config[section]['TENANT_IAM_URL']
+            tenant_url = self.config[section]['TENANT_URL']
+        except KeyError as e:
+            print(f"Error: Missing key {e} in section [{section}] of {self.config_file}")
+            sys.exit(1)
+
+        return token, tenant_name, tenant_iam_url, tenant_url

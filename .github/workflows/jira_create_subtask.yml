@@ -1,4 +1,5 @@
-name: Update Jira Ticket
+name: Appsec Triage - Update Jira Ticket 
+run-name: Jira Update - ${{ github.event.inputs.jira_issue && format('({0})', github.event.inputs.jira_issue) || '' }}
 
 on:
   workflow_dispatch:
@@ -13,17 +14,17 @@ on:
         type: string
 
 jobs:
-  run-dar-workflow:
+  update-jira-ticket:
     runs-on: ubuntu-latest
 
-    # env:
-    #   CX_TOKEN: ${{ secrets.CX_TOKEN }}
-    #   CX_TENANT_NAME: ${{ vars.CX_TENANT_NAME_NPROD }}
-    #   CX_TENANT_IAM_URL: ${{ vars.CX_TENANT_IAM_URL_NPROD }}
-    #   CX_TENANT_URL: ${{ vars.CX_TENANT_URL_NPROD }}
-    #   JIRA_PAT: ${{ secrets.JIRA_PAT }}
-    #   JIRA_PROJECT_ID: ${{ vars.JIRA_PROJECT_ID }}
-    #   JIRA_URL: ${{ vars.JIRA_URL }}
+    env:
+      CX_TOKEN: ${{ secrets.CX_TOKEN }}
+      CX_TENANT_NAME: ${{ vars.CX_TENANT_NAME }}
+      CX_TENANT_IAM_URL: ${{ vars.CX_TENANT_IAM_URL }}
+      CX_TENANT_URL: ${{ vars.CX_TENANT_URL }}
+      JIRA_PAT: ${{ secrets.JIRA_PAT }}
+      JIRA_PROJECT_ID: ${{ vars.JIRA_PROJECT_ID }}
+      JIRA_URL: ${{ vars.JIRA_URL }}
 
     steps:
       - name: Checkout repository
@@ -34,13 +35,21 @@ jobs:
         with:
           python-version: '3.x'
 
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run DAR Script
+      - name: Run Jira Script
         run: |
-          python3 appsec_triage_get_vulnerability_details.py \
+          python3 appsec_triage_main.py \
             "${{ github.event.inputs.jira_issue }}" \
             "${{ github.event.inputs.scan_engine }}" \
