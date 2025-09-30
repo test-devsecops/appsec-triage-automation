@@ -64,6 +64,11 @@ class CxApiEndpoints:
     def csec_vulnerability_triage_update():
         endpoint = f"/api/containers/triage/triage/vulnerability-update"
         return endpoint
+    
+    @staticmethod
+    def dast_result_triage_update():
+        endpoint = f"/api/dast/mfe-results/changelog"
+        return endpoint
 
 # -------------- Not being used ------------------
 
