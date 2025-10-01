@@ -1,6 +1,5 @@
 import os
 import sys
-import configparser
 from dotenv import load_dotenv
 from pathlib import Path
 

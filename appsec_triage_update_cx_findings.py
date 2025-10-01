@@ -191,7 +191,7 @@ def main():
                 if csec_triage_vuln_update.get('success') is True:
                     log.info(f"[CSEC] Successfully updated the state and severity of Package: {package_id} to State: {cx_state} Severity: {cx_severity}")
             else:
-                log.error(f"[CSEC] Failed to update the state and severity o f Package: {package_id}")
+                log.error(f"[CSEC] Failed to update the state and severity of Package: {package_id}")
             
         else:
             log.warning(f"The {scan_type} Scan type is not supported by this workflow automation.")
