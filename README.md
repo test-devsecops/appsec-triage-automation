@@ -131,6 +131,37 @@ The workflow consists of Python scripts that interact with Checkmarx and Jira AP
 - Access to Checkmarx and Jira APIs (with credentials/configuration)
 - Configuration files in `config/` for field mapping and user types
 
+## Configuration
+
+Before running the scripts, you must configure environment variables for both Checkmarx and Jira integrations.
+
+### Checkmarx Configuration
+
+1. Copy the sample environment file:
+   ```
+   cp checkmarx_utility/.env_sample checkmarx_utility/.env
+   ```
+2. Open `checkmarx_utility/.env` and fill in the required values:
+   - `CHECKMARX_API_URL`: The base URL for your Checkmarx API instance.
+   - `CHECKMARX_USERNAME`: Your Checkmarx username.
+   - `CHECKMARX_PASSWORD`: Your Checkmarx password or API token.
+   - `CHECKMARX_TENANT` (if applicable): The tenant or organization name.
+   - Any other variables as specified in the sample file.
+
+### Jira Configuration
+
+1. Copy the sample environment file:
+   ```
+   cp jira_utility/.env_sample jira_utility/.env
+   ```
+2. Open `jira_utility/.env` and fill in the required values:
+   - `JIRA_API_URL`: The base URL for your Jira instance (e.g., `https://yourcompany.atlassian.net`).
+   - `JIRA_USERNAME`: Your Jira username or email.
+   - `JIRA_API_TOKEN`: Your Jira API token or password.
+   - Any other variables as specified in the sample file.
+
+> **Tip:** Never commit your `.env` files with real credentials to version control. Use the `.env_sample` files as templates for new environments.
+
 ## Usage
 
 1. Install dependencies:
