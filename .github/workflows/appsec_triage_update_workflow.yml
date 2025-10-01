@@ -1,20 +1,30 @@
-name: AppSec Triage Update Workflow Automation
+name: Appsec Triage - Update CX Finding
+run-name: Jira Update - ${{ github.event.inputs.jira_issue && format('({0})', github.event.inputs.jira_issue) || '' }}
 
 on:
-  repository_dispatch:
-    types: [jira-trigger]
-  # schedule:
-    # - cron:  '30 23 * * *' # running every 23:30 UTC, is 7:30 SGT
-  
+  workflow_dispatch:
+    inputs:
+      jira_issue:
+        description: "Jira Issue ID"
+        default: ''
+        type: string
+      scan_engine:
+        description: "Scan Engine Type"
+        default: ''
+        type: string
+
 jobs:
-  run-checkmarx-onboarder:
+  update-cx-finding:
     runs-on: ubuntu-latest
 
     env:
-      CX_TOKEN: ${{ secrets.CX_EU_TOKEN }}
-      TENANT_NAME: ${{ vars.CX_TENANT_NAME_NPROD }}
-      TENANT_IAM_URL: ${{ vars.CX_TENANT_IAM_URL_NPROD }}
-      TENANT_URL: ${{ vars.CX_TENANT_URL_NPROD }}
+      CX_TOKEN: ${{ secrets.CX_TOKEN }}
+      CX_TENANT_NAME: ${{ vars.CX_TENANT_NAME }}
+      CX_TENANT_IAM_URL: ${{ vars.CX_TENANT_IAM_URL }}
+      CX_TENANT_URL: ${{ vars.CX_TENANT_URL }}
+      JIRA_PAT: ${{ secrets.JIRA_PAT }}
+      JIRA_PROJECT_ID: ${{ vars.JIRA_PROJECT_ID }}
+      JIRA_URL: ${{ vars.JIRA_URL }}
 
     steps:
       - name: Checkout repository
@@ -25,10 +35,21 @@ jobs:
         with:
           python-version: '3.x'
 
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run  AppSec Workflow Automation script
-        run: python3 appsec_triage_update_cx_findings.py
+      - name: Run Update CX Finding Script
+        run: |
+          python3 appsec_triage_update_cx_findings.py \
+            "${{ github.event.inputs.jira_issue }}" \
+            "${{ github.event.inputs.scan_engine }}" \
