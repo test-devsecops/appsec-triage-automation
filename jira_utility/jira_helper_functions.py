@@ -1,7 +1,7 @@
 import string
 import re
 
-class HelperFunctions:
+class JiraHelperFunctions:
     
     @staticmethod
     def is_readable(text):
