@@ -1,6 +1,6 @@
 import argparse
 from jira_utility.jira_api_actions import JiraApiActions
-from jira_utility.helper_functions import HelperFunctions
+from jira_utility.jira_helper_functions import JiraHelperFunctions
 from utils.yml_file_utility import load_map
 import appsec_triage_get_vulnerability_details as appsec_details
 import appsec_triage_create_subtask as appsec_subtask
@@ -51,7 +51,7 @@ def main():
         try:
             jira_issue_data = jira_api_actions.get_issue(jira_issue)
             jira_issue_fields = jira_issue_data.get("fields")
-            jira_issue_fields = HelperFunctions.remove_all_null_key_values(jira_issue_fields)
+            jira_issue_fields = JiraHelperFunctions.remove_all_null_key_values(jira_issue_fields)
         except Exception as e:
             log.error(f"Failed to fetch or process Jira issue data: {e}")
             _exception_update_description(jira_api_actions, jira_issue, log)
@@ -74,7 +74,7 @@ def main():
 
         if scan_engine == 'SAST':
             try:
-                sast_jira = HelperFunctions.parse_sast_input(parent_data)
+                sast_jira = JiraHelperFunctions.parse_sast_input(parent_data)
                 sast_details = appsec_details.get_vuln_details(
                     input_scan_id=sast_jira.get('scan_id'),
                     input_vuln_ids=sast_jira.get('vuln_ids'),
@@ -115,7 +115,7 @@ def main():
                 return 1
         elif scan_engine == 'SCA':
             try:
-                sca_jira = HelperFunctions.parse_sca_input(parent_data)
+                sca_jira = JiraHelperFunctions.parse_sca_input(parent_data)
                 sca_details = appsec_details.get_vuln_details(
                     input_scan_id=sca_jira.get('scan_id'),
                     input_vuln_ids="",
@@ -158,7 +158,7 @@ def main():
                 return 1
         elif scan_engine == 'CSEC':
             try:
-                csec_jira = HelperFunctions.parse_csec_input(parent_data)
+                csec_jira = JiraHelperFunctions.parse_csec_input(parent_data)
                 csec_details = appsec_details.get_vuln_details(
                     input_scan_id=csec_jira.get('scan_id'),
                     input_vuln_ids="",
@@ -199,7 +199,7 @@ def main():
                 return 1
         elif scan_engine == 'DAST':
             try:
-                dast_jira = HelperFunctions.parse_dast_input(parent_data)
+                dast_jira = JiraHelperFunctions.parse_dast_input(parent_data)
                 dast_details = appsec_details.get_vuln_details(
                     input_scan_id=dast_jira.get('scan_id'),
                     input_vuln_ids="",

@@ -2,6 +2,7 @@ from jira_utility.jira_api_actions import JiraApiActions
 from checkmarx_utility.cx_api_actions import CxApiActions
 from checkmarx_utility.cx_token_manager import AccessTokenManager
 from utils.helper_functions import HelperFunctions
+from checkmarx_utility.cx_helper_functions import CxHelperFunctions
 from utils.logger import Logger
 
 import os
@@ -56,12 +57,13 @@ def main():
     access_token = access_token_manager.get_valid_token()
     cx_api_actions = CxApiActions(access_token=access_token, logger=log)
     helper = HelperFunctions()
+    cx_helper = CxHelperFunctions()
 
     if scan_type == SCAN_TYPE_DAST:
         log.info(f"Scan Type: {scan_type}")
 
         # Extract result id and scan id from the URL
-        result_ids = helper.extract_ids_from_result_url(TEST_DAST_RESULT_URL)
+        result_ids = cx_helper.extract_ids_from_result_url(TEST_DAST_RESULT_URL)
         result_id = result_ids.get('result_id')
         scan_id = result_ids.get('scan_id')
         environment_id = result_ids.get('environment_id')
@@ -146,7 +148,7 @@ def main():
                 "Downgrade to Low": {"state": "Confirmed", "severity": "0.1"},
             }
 
-            package_name, package_version = helper.set_package_and_version(TEST_SCA_PACKAGE_NAME)
+            package_name, package_version = cx_helper.set_package_and_version(TEST_SCA_PACKAGE_NAME)
             cx_state, cx_severity, cx_score = _get_cx_state_severity_score(sca_triage_values_mapping, TEST_TRIAGE_STATUS)
 
             sca_vuln_details = cx_api_actions.get_sca_vulnerability_details_with_CVE_graphql(scan_id, project_id, package_name, package_version, TEST_SCA_CVE_ID)
@@ -191,7 +193,7 @@ def main():
                 if csec_triage_vuln_update.get('success') is True:
                     log.info(f"[CSEC] Successfully updated the state and severity of Package: {package_id} to State: {cx_state} Severity: {cx_severity}")
             else:
-                log.error(f"[CSEC] Failed to update the state and severity o f Package: {package_id}")
+                log.error(f"[CSEC] Failed to update the state and severity of Package: {package_id}")
             
         else:
             log.warning(f"The {scan_type} Scan type is not supported by this workflow automation.")

@@ -1,93 +1,200 @@
 # triage-workflow
 
+## Overview
 
+**triage-workflow** is an automation toolkit for managing application security findings across multiple scan types (SAST, SCA, CSEC, DAST) using Checkmarx and Jira integrations. It streamlines the extraction, triage, and update of vulnerability states, severities, and scores, enabling security teams to efficiently process and track findings.
 
-## Getting started
+## Features
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+- Automated extraction of vulnerability details from Checkmarx scans
+- Triage and update of findings (state, severity, score) via API
+- Integration with Jira for ticket creation and updates
+- Support for SAST (Static Analysis), SCA (Software Composition Analysis), CSEC (Container Security), and DAST (Dynamic Analysis) workflows
+- Modular utility scripts for HTTP requests, logging, configuration, and helper functions
+- Configurable field mappings and user types
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+## Project File Structure
 
 ```
-cd existing_repo
-git remote add origin https://atlas.cirrus.ensigninfosecurity.com/ib/prudential/triage-workflow.git
-git branch -M main
-git push -uf origin main
+appsec_triage_create_subtask.py
+appsec_triage_get_vulnerability_details.py
+appsec_triage_main.py
+appsec_triage_update_cx_findings.py
+checkmarx_utility/
+    ├── .env_sample
+    ├── cx_api_actions.py
+    ├── cx_api_endpoints.py
+    ├── cx_config_utility.py
+    ├── cx_helper_functions.py
+    ├── cx_token_manager.py
+config/
+    ├── field_mapping.yml
+    ├── user_type.yml
+.github/
+    └── workflows/
+        ├── appsec_workflow.yml
+        ├── appsec_triage_update_workflow.yml
+        ├── jira_create_subtask.yml
+.gitignore
+jira_utility/
+    ├── __init__.py
+    ├── .env_sample
+    ├── helper_functions.py
+    ├── jira_api_actions.py
+    ├── jira_api_endpoints.py
+    ├── jira_config_utility.py
+    ├── jira_helper_functions.py
+logs/
+README.md
+requirements.txt
+utils/
+    ├── exception_handler.py
+    ├── helper_functions.py
+    ├── http_utility.py
+    ├── json_file_utility.py
+    ├── logger.py
+    ├── yml_file_utility.py
 ```
 
-## Integrate with your tools
+### File/Directory Descriptions
 
-- [ ] [Set up project integrations](https://atlas.cirrus.ensigninfosecurity.com/ib/prudential/triage-workflow/-/settings/integrations)
+- **appsec_triage_create_subtask.py**: Script to create Jira subtasks for findings that require remediation or further investigation.
+- **appsec_triage_get_vulnerability_details.py**: Extracts and formats detailed vulnerability information from Checkmarx scans.
+- **appsec_triage_main.py**: Main entry point for orchestrating the triage workflow, integrating extraction, triage, and ticketing.
+- **appsec_triage_update_cx_findings.py**: Automates the triage update process for findings, mapping Jira statuses to Checkmarx states/severities/scores and updating them via API.
+- **checkmarx_utility/**: Directory containing modules for Checkmarx API actions, endpoint definitions, configuration, and token management.
+  - **.env_sample**: Example environment variable file for Checkmarx API configuration.
+  - **cx_api_actions.py**: Functions for interacting with Checkmarx APIs.
+  - **cx_api_endpoints.py**: Endpoint definitions for Checkmarx APIs.
+  - **cx_config_utility.py**: Utilities for Checkmarx configuration management.
+  - **cx_helper_functions.py**: Helper functions for Checkmarx-specific data processing and integration.
+  - **cx_token_manager.py**: Handles Checkmarx API authentication tokens.
+- **config/**: Directory for configuration files.
+  - **field_mapping.yml**: YAML file mapping fields between Jira and Checkmarx.
+  - **user_type.yml**: YAML file defining user types and roles.
+- **.github/**: GitHub configuration directory.
+  - **workflows/**: Contains GitHub Actions workflow files for CI/CD automation.
+    - **appsec_workflow.yml**: Workflow for main AppSec automation.
+    - **appsec_triage_update_workflow.yml**: Workflow for updating triage findings.
+    - **jira_create_subtask.yml**: Workflow for automating Jira subtask creation.
+- **.gitignore**: Specifies files and directories to be ignored by git.
+- **jira_utility/**: Directory containing modules for Jira API actions, endpoint definitions, configuration, and helper functions.
+  - **__init__.py**: Marks the directory as a Python package.
+  - **.env_sample**: Example environment variable file for Jira API configuration.
+  - **helper_functions.py**: Helper functions for Jira integration.
+  - **jira_api_actions.py**: Functions for interacting with Jira APIs.
+  - **jira_api_endpoints.py**: Endpoint definitions for Jira APIs.
+  - **jira_config_utility.py**: Utilities for Jira configuration management.
+  - **jira_helper_functions.py**: Helper functions for Jira-specific data processing and integration.
+- **logs/**: Directory for log files generated by the scripts.
+- **README.md**: Project documentation file.
+- **requirements.txt**: Python dependencies required for the project.
+- **utils/**: Shared utility modules for HTTP requests, logging, exception handling, YAML/JSON file management, and helper functions.
+  - **exception_handler.py**: Decorator and utilities for exception handling.
+  - **helper_functions.py**: General-purpose helper functions.
+  - **http_utility.py**: HTTP request abstraction and error handling.
+  - **json_file_utility.py**: Utilities for working with JSON files.
+  - **logger.py**: Logging utilities.
+  - **yml_file_utility.py**: Utilities for working with YAML files.
 
-## Collaborate with your team
+## How It Works
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+The workflow consists of Python scripts that interact with Checkmarx and Jira APIs to:
+- Extract scan and vulnerability details
+- Map triage statuses to Checkmarx states/severities/scores
+- Update findings in Checkmarx based on triage decisions
+- Optionally create or update Jira tickets for tracking and remediation
 
-## Test and Deploy
+## Script Descriptions
 
-Use the built-in continuous integration in GitLab.
+- **appsec_triage_get_vulnerability_details.py**  
+  Extracts detailed vulnerability information from Checkmarx scans (SAST, SCA, CSEC, DAST) and formats it for reporting or integration.
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+- **appsec_triage_update_cx_findings.py**  
+  Automates the triage update process for findings, mapping Jira statuses to Checkmarx states/severities/scores and updating them via API.
 
-***
+- **appsec_triage_create_subtask.py**  
+  (If present) Creates Jira subtasks for findings requiring remediation or further investigation.
 
-# Editing this README
+- **appsec_triage_main.py**  
+  Entry point for orchestrating the workflow, integrating extraction, triage, and ticketing.
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+- **checkmarx_utility/**  
+  Contains modules for Checkmarx API actions, endpoint definitions, configuration, and token management.
 
-## Suggestions for a good README
+- **jira_utility/**  
+  Contains modules for Jira API actions, endpoint definitions, configuration, and helper functions.
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+- **utils/**  
+  Shared utilities for HTTP requests, logging, exception handling, YAML/JSON file management, and helper functions.
 
-## Name
-Choose a self-explaining name for your project.
+## Requirements
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+- Python 3.8+
+- Dependencies listed in `requirements.txt`
+- Access to Checkmarx and Jira APIs (with credentials/configuration)
+- Configuration files in `config/` for field mapping and user types
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+## Local Machine Configuration
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+Before running the scripts in your local machine, you must configure environment variables for both Checkmarx and Jira integrations.
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+### Checkmarx Configuration
+
+1. Copy the sample environment file:
+   ```
+   cp checkmarx_utility/.env_sample checkmarx_utility/.env
+   ```
+2. Open `checkmarx_utility/.env` and fill in the required values:
+   - `CHECKMARX_API_URL`: The base URL for your Checkmarx API instance.
+   - `CHECKMARX_USERNAME`: Your Checkmarx username.
+   - `CHECKMARX_PASSWORD`: Your Checkmarx password or API token.
+   - `CHECKMARX_TENANT` (if applicable): The tenant or organization name.
+   - Any other variables as specified in the sample file.
+
+### Jira Configuration
+
+1. Copy the sample environment file:
+   ```
+   cp jira_utility/.env_sample jira_utility/.env
+   ```
+2. Open `jira_utility/.env` and fill in the required values:
+   - `JIRA_API_URL`: The base URL for your Jira instance (e.g., `https://yourcompany.atlassian.net`).
+   - `JIRA_USERNAME`: Your Jira username or email.
+   - `JIRA_API_TOKEN`: Your Jira API token or password.
+   - Any other variables as specified in the sample file.
+
+> **Tip:** Never commit your `.env` files with real credentials to version control. Use the `.env_sample` files as templates for new environments.
 
 ## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+
+1. Install dependencies:
+   ```
+   pip install -r requirements.txt
+   ```
+2. Configure API credentials and field mappings in the `config/` directory.
+3. Run the main workflow:
+   ```
+   python appsec_triage_main.py
+   ```
+4. Use individual scripts for extraction or triage updates as needed:
+   ```
+   python appsec_triage_get_vulnerability_details.py
+   python appsec_triage_update_cx_findings.py
+   ```
 
 ## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+For issues or questions, open an issue in the repository or contact the project maintainer.
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+## Authors and Acknowledgments
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+Developed by the Ensign InfoSecurity AppSec Automation Team.
 
 ## License
-For open source projects, say how it is licensed.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+See LICENSE file for details.
+
+## Project Status
+
+Actively maintained and open to contributions.
