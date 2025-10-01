@@ -131,9 +131,9 @@ The workflow consists of Python scripts that interact with Checkmarx and Jira AP
 - Access to Checkmarx and Jira APIs (with credentials/configuration)
 - Configuration files in `config/` for field mapping and user types
 
-## Configuration
+## Local Machine Configuration
 
-Before running the scripts, you must configure environment variables for both Checkmarx and Jira integrations.
+Before running the scripts in your local machine, you must configure environment variables for both Checkmarx and Jira integrations.
 
 ### Checkmarx Configuration
 
