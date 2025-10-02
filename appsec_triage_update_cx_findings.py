@@ -34,15 +34,11 @@ def main():
             description="AppSec Triage Script"
         )
         parser.add_argument("jira_issue", help="Jira Issue Key e.g. ABC-123")
-        parser.add_argument("scan_engine_type", help="Scan Engine Types e.g SAST, SCA, CSEC, DAST")
-        # parser.add_argument("reference_num", nargs="?", default="", help="Reference Number for debugging purposes (optional, used by GitHub Actions)")
         args = parser.parse_args()
         jira_issue = args.jira_issue
-        scan_engine = args.scan_engine_type
-        # reference_number = args.reference_num
 
         print(f"Jira issue: {jira_issue}")
-        print(f"Scan Engine: {scan_engine}")
+        # print(f"Scan Engine: {scan_engine}")
         # print(f"Ref Number: {reference_number if reference_number else 'N/A'}")
 
         jira_api_actions = JiraApiActions()
@@ -58,7 +54,7 @@ def main():
         
         try:
             field_map = load_map('config/field_mapping.yml',parent_field='fields')
-            user_type = load_map('config/user_type.yml',parent_field='user_type')
+            # user_type = load_map('config/user_type.yml',parent_field='user_type')
         except Exception as e:
             log.error(f"Failed to load yaml mapping: {e}")
             jira_api_actions.exception_update_description(jira_api_actions, jira_issue, log)
@@ -70,7 +66,13 @@ def main():
             for field_key, field_value in field_map.items():
                 if field_value == key:
                     parent_data[field_key] = value
-        print(json.dumps(parent_data,indent=2))
+                if key == 'summary':
+                    parent_data['summary'] = value
+    
+        # print(json.dumps(parent_data,indent=2))
+
+        scan_engine = parent_data.get('summary').split('|')[0].strip()
+        print(f"Scan Engine: {scan_engine}")
 
         # TEST_TRIAGE_STATUS = "Downgrade to High" #"False Positive" #"Downgrade to High", "Downgrade to Medium", "Downgrade to Low"
         TEST_TRIAGE_STATUS = parent_data.get("triage_status", {}).get("value",None)
@@ -251,9 +253,7 @@ def main():
 
                 cx_state, cx_severity, cx_score = _get_cx_state_severity_score(csec_triage_values_mapping, TEST_TRIAGE_STATUS)
 
-                print(TEST_CSEC_PACKAGE_ID)
                 csec_vuln_details = cx_api_actions.get_csec_vulnerability_details_graphql(scan_id, project_id, image_id, TEST_CSEC_PACKAGE_ID)
-                print(csec_vuln_details)
                 image_vuln_details = helper.get_nested(csec_vuln_details, ['data', 'imagesVulnerabilities', 'items'])
                 vuln_item_id = image_vuln_details[0].get('id')
                 package_id = image_vuln_details[0].get('packageId')
