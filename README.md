@@ -32,7 +32,6 @@ config/
     ├── user_type.yml
 .github/
     └── workflows/
-        ├── appsec_workflow.yml
         ├── appsec_triage_update_workflow.yml
         ├── jira_create_subtask.yml
 .gitignore
@@ -74,7 +73,6 @@ utils/
   - **user_type.yml**: YAML file defining user types and roles.
 - **.github/**: GitHub configuration directory.
   - **workflows/**: Contains GitHub Actions workflow files for CI/CD automation.
-    - **appsec_workflow.yml**: Workflow for main AppSec automation.
     - **appsec_triage_update_workflow.yml**: Workflow for updating triage findings.
     - **jira_create_subtask.yml**: Workflow for automating Jira subtask creation.
 - **.gitignore**: Specifies files and directories to be ignored by git.
