@@ -16,7 +16,7 @@ class Config:
         self.token = os.getenv('JIRA_PAT')
         self.project_id = os.getenv('JIRA_PROJECT_ID')
         self.jira_url = os.getenv('JIRA_URL')
-        self.issuetype_id= os.getenv('ISSUETYPE_ID')
+        # self.issuetype_id= os.getenv('ISSUETYPE_ID')
 
         missing = [var for var in ['JIRA_PAT', 'JIRA_PROJECT_ID', 'JIRA_URL', 'ISSUETYPE_ID'] if os.getenv(var) is None]
         if missing:
@@ -25,4 +25,4 @@ class Config:
 
     def get_config(self):
         """Return the loaded configuration values."""
-        return self.token, self.project_id, self.jira_url, self.issuetype_id
+        return self.token, self.project_id, self.jira_url

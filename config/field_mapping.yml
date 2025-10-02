@@ -9,7 +9,7 @@ fields:
   environment_name : customfield_16942
   cve_description : customfield_16937
   package_name_or_version : customfield_16930
-  epss_score : customfield_16934
+  epss_score : customfield_16933
   cvss_score : customfield_16932
   cve_number : customfield_16931
   vulnerability_id_1: customfield_16805
