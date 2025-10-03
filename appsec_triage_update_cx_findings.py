@@ -74,44 +74,44 @@ def main():
         scan_engine = parent_data.get('summary').split('|')[0].strip()
         print(f"Scan Engine: {scan_engine}")
 
-        # TEST_TRIAGE_STATUS = "Downgrade to High" #"False Positive" #"Downgrade to High", "Downgrade to Medium", "Downgrade to Low"
-        TEST_TRIAGE_STATUS = parent_data.get("triage_status", {}).get("value",None)
+        # TRIAGE_STATUS = "Downgrade to High" #"False Positive" #"Downgrade to High", "Downgrade to Medium", "Downgrade to Low"
+        TRIAGE_STATUS = parent_data.get("triage_status", {}).get("value",None)
 
-        if TEST_TRIAGE_STATUS is None or TEST_TRIAGE_STATUS.lower() == 'please select value' :
+        if TRIAGE_STATUS is None or TRIAGE_STATUS.lower() == 'please select value' :
             raise ValueError("Triage status hasn't been selected, or empty")
 
-        # TEST_COMMENT = "This is a test comment 2"
-        TEST_COMMENT = parent_data.get("justification",None)
+        # JUSTIFICATION = "This is a test comment 2"
+        JUSTIFICATION = parent_data.get("justification",None)
         
-        if TEST_COMMENT is None or TEST_COMMENT.lower() == 'please input justification':
+        if JUSTIFICATION is None or JUSTIFICATION.lower() == 'please input justification':
             raise ValueError("No Justification found")
 
-        # TEST_SCAN_ID = "0b14a69a-a6db-470c-ae75-190a45446859" #"e5421550-fdc2-4b13-b85d-866f136a751c"
-        TEST_SCAN_ID = parent_data.get("scan_id")
+        # SCAN_ID = "0b14a69a-a6db-470c-ae75-190a45446859" #"e5421550-fdc2-4b13-b85d-866f136a751c"
+        SCAN_ID = parent_data.get("scan_id")
 
         # SAST
-        # TEST_SAST_VULN_ID = "ysTAGGDe/mRAJty/2BEXEUhNeTo="
-        TEST_SAST_VULN_ID = parent_data.get("vulnerability")
+        # SAST_VULN_ID = "ysTAGGDe/mRAJty/2BEXEUhNeTo="
+        SAST_VULN_ID = parent_data.get("vulnerability")
 
 
         # SCA
-        # TEST_SCA_PACKAGE_NAME = "multer 1.4.5-lts.2"
-        # TEST_SCA_CVE_ID = "CVE-2025-47935"
+        # SCA_PACKAGE_NAME = "multer 1.4.5-lts.2"
+        # SCA_CVE_ID = "CVE-2025-47935"
 
-        TEST_SCA_PACKAGE_NAME = parent_data.get("package_name_or_version")
-        TEST_SCA_CVE_ID = parent_data.get("cve_id")
+        SCA_PACKAGE_NAME = parent_data.get("package_name_or_version")
+        SCA_CVE_ID = parent_data.get("cve_id")
 
 
         # CSEC
-        # TEST_CSEC_PACKAGE_ID = "libc-bin:2.36-9+deb12u10"
-        # TEST_CSEC_CVE_ID = "CVE-2025-5702"
-        TEST_CSEC_PACKAGE_ID = parent_data.get("package_name_or_version")
-        TEST_CSEC_CVE_ID = parent_data.get("cve_number")
+        # CSEC_PACKAGE_ID = "libc-bin:2.36-9+deb12u10"
+        # CSEC_CVE_ID = "CVE-2025-5702"
+        CSEC_PACKAGE_ID = parent_data.get("package_name_or_version")
+        CSEC_CVE_ID = parent_data.get("cve_number")
 
         
         # DAST
-        # TEST_DAST_RESULT_URL = 'https://eu-2.ast.checkmarx.net/applicationsAndProjects/environments/685226be-f5bb-4134-8175-bb6b3ff2d8a7/1b5b040b-f8ba-4927-827f-3b63d4d2452a?resultId=2bbf6cd9e29c747c3234569298a051ee2c70fbbf20646faaf33b5da279644749&tableConfig=%7B%22search%22%3A%7B%22text%22%3A%22%22%7D%2C%22sorting%22%3A%7B%22columnKey%22%3A%22severity%22%2C%22order%22%3A%22descend%22%7D%2C%22filters%22%3A%7B%22state%22%3A%5B%22To+Verify%22%2C%22Proposed+Not+Exploitable%22%2C%22Urgent%22%2C%22Confirmed%22%5D%7D%2C%22pagination%22%3A%7B%22pageSize%22%3A10%2C%22currentPage%22%3A1%7D%2C%22grouping%22%3A%7B%22groups%22%3A%5B%5D%2C%22groupsState%22%3A%5B%5D%7D%7D'
-        TEST_DAST_RESULT_URL = parent_data.get("url")
+        # DAST_RESULT_URL = 'https://eu-2.ast.checkmarx.net/applicationsAndProjects/environments/685226be-f5bb-4134-8175-bb6b3ff2d8a7/1b5b040b-f8ba-4927-827f-3b63d4d2452a?resultId=2bbf6cd9e29c747c3234569298a051ee2c70fbbf20646faaf33b5da279644749&tableConfig=%7B%22search%22%3A%7B%22text%22%3A%22%22%7D%2C%22sorting%22%3A%7B%22columnKey%22%3A%22severity%22%2C%22order%22%3A%22descend%22%7D%2C%22filters%22%3A%7B%22state%22%3A%5B%22To+Verify%22%2C%22Proposed+Not+Exploitable%22%2C%22Urgent%22%2C%22Confirmed%22%5D%7D%2C%22pagination%22%3A%7B%22pageSize%22%3A10%2C%22currentPage%22%3A1%7D%2C%22grouping%22%3A%7B%22groups%22%3A%5B%5D%2C%22groupsState%22%3A%5B%5D%7D%7D'
+        DAST_RESULT_URL = parent_data.get("url")
 
         SCAN_TYPE_SAST = "SAST"
         SCAN_TYPE_SCA = "SCA"
@@ -134,20 +134,20 @@ def main():
             log.info(f"Scan Type: {scan_type}")
 
             # Extract result id and scan id from the URL
-            result_ids = cx_helper.extract_ids_from_result_url(TEST_DAST_RESULT_URL)
+            result_ids = cx_helper.extract_ids_from_result_url(DAST_RESULT_URL)
             result_id = result_ids.get('result_id')
             scan_id = result_ids.get('scan_id')
             environment_id = result_ids.get('environment_id')
         
             # Check if the scan id provided by the user is the same as the scan IDs from the URL
-            if TEST_SCAN_ID != result_ids.get('scan_id'):
-                log.error(f"Scan ID {TEST_SCAN_ID} did not match the scan ID from the URL")
+            if SCAN_ID != result_ids.get('scan_id'):
+                log.error(f"Scan ID {SCAN_ID} did not match the scan ID from the URL")
                 return
             
             # Check if the scan id provided by the user really exists
             result_info = cx_api_actions.get_dast_scan_result_detailed_info(result_id, scan_id)
             if result_info is None:
-                log.error(f"Scan ID {TEST_SCAN_ID} is empty or does not exist")
+                log.error(f"Scan ID {SCAN_ID} is empty or does not exist")
                 return
 
             # JIRA to CX Mapping
@@ -158,8 +158,8 @@ def main():
                 "Downgrade to Low": {"state": "Confirmed", "severity": "LOW"},
             }
 
-            cx_state, cx_severity, cx_score = _get_cx_state_severity_score(dast_triage_values_mapping, TEST_TRIAGE_STATUS)
-            dast_update_response = cx_api_actions.post_dast_result_update(environment_id, [result_id], scan_id, cx_severity, cx_state, TEST_COMMENT)
+            cx_state, cx_severity, cx_score = _get_cx_state_severity_score(dast_triage_values_mapping, TRIAGE_STATUS)
+            dast_update_response = cx_api_actions.post_dast_result_update(environment_id, [result_id], scan_id, cx_severity, cx_state, JUSTIFICATION)
             wrapped_result_id = helper.shorten_strings_middle(str(result_id))
 
             if dast_update_response == "OK":
@@ -169,9 +169,9 @@ def main():
 
         else:
 
-            scan_details = cx_api_actions.get_scan_details(TEST_SCAN_ID)
+            scan_details = cx_api_actions.get_scan_details(SCAN_ID)
             if scan_details is None:
-                log.error(f"Scan ID {TEST_SCAN_ID} is empty or does not exist")
+                log.error(f"Scan ID {SCAN_ID} is empty or does not exist")
                 return
             
             project_id = scan_details.get('projectId')
@@ -188,18 +188,18 @@ def main():
                     "Downgrade to Low": {"state": "CONFIRMED", "severity": "LOW"},
                 }
 
-                scan_results = cx_api_actions.get_sast_results(TEST_SCAN_ID, TEST_SAST_VULN_ID)
+                scan_results = cx_api_actions.get_sast_results(SCAN_ID, SAST_VULN_ID)
                 if scan_results is None:
-                    log.error(f"Scan ID {TEST_SCAN_ID} is empty or does not exist")
+                    log.error(f"Scan ID {SCAN_ID} is empty or does not exist")
                     return
                 
-                cx_state, cx_severity, cx_score = _get_cx_state_severity_score(sast_triage_values_mapping, TEST_TRIAGE_STATUS)
+                cx_state, cx_severity, cx_score = _get_cx_state_severity_score(sast_triage_values_mapping, TRIAGE_STATUS)
 
                 for result in scan_results.get('results'):
                     similarity_id = result.get('similarityID')
                     log.info(f"Similarity ID: {similarity_id}")
                     
-                    sast_predicate_response = cx_api_actions.post_sast_predicates(similarity_id, project_id, scan_id, cx_severity, cx_state, TEST_COMMENT)
+                    sast_predicate_response = cx_api_actions.post_sast_predicates(similarity_id, project_id, scan_id, cx_severity, cx_state, JUSTIFICATION)
                     wrapped_similarity_id = helper.shorten_strings_middle(str(similarity_id))
 
                     # Expecting None 
@@ -219,16 +219,16 @@ def main():
                     "Downgrade to Low": {"state": "Confirmed", "severity": "0.1"},
                 }
 
-                package_name, package_version = cx_helper.set_package_and_version(TEST_SCA_PACKAGE_NAME)
-                cx_state, cx_severity, cx_score = _get_cx_state_severity_score(sca_triage_values_mapping, TEST_TRIAGE_STATUS)
+                package_name, package_version = cx_helper.set_package_and_version(SCA_PACKAGE_NAME)
+                cx_state, cx_severity, cx_score = _get_cx_state_severity_score(sca_triage_values_mapping, TRIAGE_STATUS)
 
-                sca_vuln_details = cx_api_actions.get_sca_vulnerability_details_with_CVE_graphql(scan_id, project_id, package_name, package_version, TEST_SCA_CVE_ID)
+                sca_vuln_details = cx_api_actions.get_sca_vulnerability_details_with_CVE_graphql(scan_id, project_id, package_name, package_version, SCA_CVE_ID)
                 cve_details = helper.get_nested(sca_vuln_details, ['data', 'vulnerabilitiesRisksByScanId', 'items'])
                 package_repo = cve_details[0].get('packageInfo').get('packageRepository')
                 package_id = cve_details[0].get('packageId')
 
-                change_state_action = cx_api_actions.post_sca_management_of_risk(package_name, package_version, package_repo, TEST_SCA_CVE_ID, project_id, 'ChangeState', cx_state, TEST_COMMENT)
-                change_score_action = cx_api_actions.post_sca_management_of_risk(package_name, package_version, package_repo, TEST_SCA_CVE_ID, project_id, 'ChangeScore', cx_severity, TEST_COMMENT)
+                change_state_action = cx_api_actions.post_sca_management_of_risk(package_name, package_version, package_repo, SCA_CVE_ID, project_id, 'ChangeState', cx_state, JUSTIFICATION)
+                change_score_action = cx_api_actions.post_sca_management_of_risk(package_name, package_version, package_repo, SCA_CVE_ID, project_id, 'ChangeScore', cx_severity, JUSTIFICATION)
                 
                 # Expecting None 
                 if change_state_action is None and change_score_action is None:
@@ -251,14 +251,14 @@ def main():
                     "Downgrade to Low": {"state": "Confirmed", "severity": "Low", "score": 0.1},
                 }
 
-                cx_state, cx_severity, cx_score = _get_cx_state_severity_score(csec_triage_values_mapping, TEST_TRIAGE_STATUS)
+                cx_state, cx_severity, cx_score = _get_cx_state_severity_score(csec_triage_values_mapping, TRIAGE_STATUS)
 
-                csec_vuln_details = cx_api_actions.get_csec_vulnerability_details_graphql(scan_id, project_id, image_id, TEST_CSEC_PACKAGE_ID)
+                csec_vuln_details = cx_api_actions.get_csec_vulnerability_details_graphql(scan_id, project_id, image_id, CSEC_PACKAGE_ID)
                 image_vuln_details = helper.get_nested(csec_vuln_details, ['data', 'imagesVulnerabilities', 'items'])
                 vuln_item_id = image_vuln_details[0].get('id')
                 package_id = image_vuln_details[0].get('packageId')
                 
-                csec_triage_vuln_update = cx_api_actions.post_csec_vulnerability_triage_update(cx_state, cx_severity, cx_score, TEST_COMMENT, scan_id, project_id, vuln_item_id, TEST_CSEC_CVE_ID)
+                csec_triage_vuln_update = cx_api_actions.post_csec_vulnerability_triage_update(cx_state, cx_severity, cx_score, JUSTIFICATION, scan_id, project_id, vuln_item_id, CSEC_CVE_ID)
 
                 if csec_triage_vuln_update is not None:
                     if csec_triage_vuln_update.get('success') is True:
