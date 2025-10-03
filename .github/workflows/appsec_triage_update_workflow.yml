@@ -8,10 +8,6 @@ on:
         description: "Jira Issue ID"
         default: ''
         type: string
-      scan_engine:
-        description: "Scan Engine Type"
-        default: ''
-        type: string
 
 jobs:
   update-cx-finding:
@@ -52,4 +48,3 @@ jobs:
         run: |
           python3 appsec_triage_update_cx_findings.py \
             "${{ github.event.inputs.jira_issue }}" \
-            "${{ github.event.inputs.scan_engine }}" \

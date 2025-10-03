@@ -6,6 +6,8 @@ from utils.http_utility import HttpRequests
 
 from urllib.parse import urlencode
 
+from utils.logger import Logger
+
 import requests
 import base64
 import sys
@@ -14,12 +16,12 @@ import json
 
 class JiraApiActions:
 
-    def __init__(self, configEnvironment=None):
+    def __init__(self):
         self.httpRequest = HttpRequests()
         self.apiEndpoints = JiraApiEndpoints()
         self.config = Config()
 
-        self.token, self.project_id, self.jira_url, self.issuetype_id = self.config.get_config(configEnvironment)
+        self.token, self.project_id, self.jira_url = self.config.get_config()
 
     @ExceptionHandler.handle_exception
     def get_queues(self):
@@ -100,3 +102,21 @@ class JiraApiActions:
 
         response = self.httpRequest.post_api_request(url, headers=headers, json=payload)
         return response
+
+    def exception_update_description(self, jira_issue: str, log: Logger, scan_id: str = None, error_message: str = None):
+        if scan_id and error_message:
+            description = f"[ERROR] Failed to fetch scan details for scan_id: {scan_id}. Error: {error_message}."
+        elif scan_id:
+            description = f"[ERROR] Failed to fetch scan details for scan_id: {scan_id}."
+        else:
+            description = "[ERROR] An unexpected error occurred. Please notify adminstrator."
+
+        added_payload = {
+            'description': description
+        }
+        try:
+            self.update_issue(added_payload, jira_issue)
+            log.info(f"Updated Ticket {jira_issue} with error.")
+        except Exception as e:
+            log.error(f"Failed to update issue with error : {e}")
+

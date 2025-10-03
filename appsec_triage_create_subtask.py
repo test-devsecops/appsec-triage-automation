@@ -44,7 +44,7 @@ def create_sast_subtask(api_action: JiraApiActions, data: dict, field_mapping: d
                 "summary": f"SAST | {values.get('vulnerability_name')}",
                 "vulnerability": values.get('vulnerability_id'),
                 "vulnerability_name": values.get('vulnerability_name'),
-                "justification": values.get("justification"),
+                "justification": "Please Input Justification",
                 "triage_status": {"value": "Please select value"},
                 "description": desc
             }
@@ -155,6 +155,7 @@ def create_csec_subtask(api_action: JiraApiActions, data: dict, field_mapping: d
 
             vuln_payload = {
                 "summary": f"CSEC | {values.get('cve_number')}",
+                "package_name_or_version" : package_info.get('package_name'),
                 "image_name" : package_info.get("image_name"),
                 "cve_number": values.get('cve_number'),
                 "cvss_score": str(values.get('cvss_score')),
@@ -165,6 +166,8 @@ def create_csec_subtask(api_action: JiraApiActions, data: dict, field_mapping: d
             }
 
             payload = main_payload | vuln_payload
+
+            # print(payload)
 
             # This changes the keys to become jira customfields keys
             subtask_to_jira_keys = {field_mapping.get(k, k): v for k, v in payload.items()}
@@ -214,7 +217,7 @@ def create_dast_subtask(api_action: JiraApiActions, data: dict, field_mapping: d
                 "summary": f"DAST | {values.get('result_category')}",
                 "url" : values.get("vulnerability_url"),
                 "description" : desc,
-                "justification" : "Please input justification",
+                "justification" : "Please Input justification",
                 # will need to change to use from data itself, not hardcoded
                 "triage_status": {"value": "Please select value"},
                 "severity" : values.get("result_description").get("severity")

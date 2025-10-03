@@ -13,11 +13,11 @@ class Config:
         load_dotenv(dotenv_path=env_path)
 
         self.token = os.getenv('CX_TOKEN')
-        self.tenant_name = os.getenv('TENANT_NAME')
-        self.tenant_iam_url = os.getenv('TENANT_IAM_URL')
-        self.tenant_url = os.getenv('TENANT_URL')
+        self.tenant_name = os.getenv('CX_TENANT_NAME')
+        self.tenant_iam_url = os.getenv('CX_TENANT_IAM_URL')
+        self.tenant_url = os.getenv('CX_TENANT_URL')
 
-        missing = [var for var in ['CX_TOKEN', 'TENANT_NAME', 'TENANT_IAM_URL', 'TENANT_URL'] if os.getenv(var) is None]
+        missing = [var for var in ['CX_TOKEN', 'CX_TENANT_NAME', 'CX_TENANT_IAM_URL', 'CX_TENANT_URL'] if os.getenv(var) is None]
         if missing:
             print(f"Error: Missing required environment variables: {', '.join(missing)}")
             sys.exit(1)
