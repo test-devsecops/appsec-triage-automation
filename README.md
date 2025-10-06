@@ -133,6 +133,35 @@ The workflow consists of Python scripts that interact with Checkmarx and Jira AP
 - Access to Checkmarx and Jira APIs (with credentials/configuration)
 - Configuration files in `config/` for field mapping and user types
 
+## Field Mapping Configuration
+
+The `config/field_mapping.yml` file defines the mapping between logical field names used in the automation scripts and their corresponding Jira custom field IDs. This allows the codebase to refer to fields in a human-readable way, while ensuring correct integration with your Jira instance.
+
+Each entry in the `fields` section maps a logical name (used in scripts and templates) to the actual Jira custom field key. For example:
+
+```yaml
+fields:
+  image_name: customfield_16941
+  url: customfield_16940
+  triage_status: customfield_16929
+  scan_id: customfield_16802
+  # ... more fields ...
+```
+
+**How to use:**
+- Update the values in `config/field_mapping.yml` to match the custom field IDs in your Jira environment.
+- When the automation scripts create or update Jira issues, they will use these mappings to populate the correct fields.
+
+**Common field mappings:**
+- `image_name`, `url`, `environment_name`: Used for asset and environment tracking.
+- `cve_description`, `cve_number`, `cve_id`: Used for vulnerability and CVE details.
+- `package_name`, `package_name_or_version`: Used for SCA and package tracking.
+- `triage_status`, `justification`, `severity`: Used for triage and risk management.
+- `vulnerability_id_1` ... `vulnerability_id_5`, `vuln_url_1` ... `vuln_url_5`: Used for associating multiple vulnerabilities or URLs with a Jira issue.
+- `support_group`: Used to assign the issue to a specific support group or team.
+
+> **Tip:** If you add new custom fields in Jira, update this file accordingly and reference the logical name in your scripts.
+
 ## Local Machine Configuration
 
 Before running the scripts in your local machine, you must configure environment variables for both Checkmarx and Jira integrations.
