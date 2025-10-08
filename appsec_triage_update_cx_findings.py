@@ -41,6 +41,8 @@ def main():
         # print(f"Scan Engine: {scan_engine}")
         # print(f"Ref Number: {reference_number if reference_number else 'N/A'}")
 
+        TRIAGE_UPDATE_STAGE = False
+
         jira_api_actions = JiraApiActions()
 
         try:
@@ -49,7 +51,7 @@ def main():
             jira_issue_fields = JiraHelperFunctions.remove_all_null_key_values(jira_issue_fields)
         except Exception as e:
             log.error(f"Failed to fetch or process Jira issue data: {e}")
-            jira_api_actions.exception_update_description(jira_issue, log)
+            jira_api_actions.populate_exception_comment_issue(jira_issue, log)
             return 1
         
         try:
@@ -57,7 +59,7 @@ def main():
             # user_type = load_map('config/user_type.yml',parent_field='user_type')
         except Exception as e:
             log.error(f"Failed to load yaml mapping: {e}")
-            jira_api_actions.exception_update_description(jira_api_actions, jira_issue, log)
+            jira_api_actions.populate_exception_comment_issue(jira_api_actions, jira_issue, log)
             return 1
 
         # Extracting data to be readable
@@ -86,39 +88,29 @@ def main():
         if JUSTIFICATION is None or JUSTIFICATION.lower() == 'please input justification':
             raise ValueError("No Justification found")
 
-        # SCAN_ID = "0b14a69a-a6db-470c-ae75-190a45446859" #"e5421550-fdc2-4b13-b85d-866f136a751c"
         SCAN_ID = parent_data.get("scan_id")
 
         # SAST
-        # SAST_VULN_ID = "ysTAGGDe/mRAJty/2BEXEUhNeTo="
         SAST_VULN_ID = parent_data.get("vulnerability")
 
 
         # SCA
-        # SCA_PACKAGE_NAME = "multer 1.4.5-lts.2"
-        # SCA_CVE_ID = "CVE-2025-47935"
-
         SCA_PACKAGE_NAME = parent_data.get("package_name_or_version")
         SCA_CVE_ID = parent_data.get("cve_id")
 
 
         # CSEC
-        # CSEC_PACKAGE_ID = "libc-bin:2.36-9+deb12u10"
-        # CSEC_CVE_ID = "CVE-2025-5702"
         CSEC_PACKAGE_ID = parent_data.get("package_name_or_version")
         CSEC_CVE_ID = parent_data.get("cve_number")
 
         
         # DAST
-        # DAST_RESULT_URL = 'https://eu-2.ast.checkmarx.net/applicationsAndProjects/environments/685226be-f5bb-4134-8175-bb6b3ff2d8a7/1b5b040b-f8ba-4927-827f-3b63d4d2452a?resultId=2bbf6cd9e29c747c3234569298a051ee2c70fbbf20646faaf33b5da279644749&tableConfig=%7B%22search%22%3A%7B%22text%22%3A%22%22%7D%2C%22sorting%22%3A%7B%22columnKey%22%3A%22severity%22%2C%22order%22%3A%22descend%22%7D%2C%22filters%22%3A%7B%22state%22%3A%5B%22To+Verify%22%2C%22Proposed+Not+Exploitable%22%2C%22Urgent%22%2C%22Confirmed%22%5D%7D%2C%22pagination%22%3A%7B%22pageSize%22%3A10%2C%22currentPage%22%3A1%7D%2C%22grouping%22%3A%7B%22groups%22%3A%5B%5D%2C%22groupsState%22%3A%5B%5D%7D%7D'
         DAST_RESULT_URL = parent_data.get("url")
 
         SCAN_TYPE_SAST = "SAST"
         SCAN_TYPE_SCA = "SCA"
         SCAN_TYPE_CSEC = "CSEC"
         SCAN_TYPE_DAST = "DAST"
-
-        # scan_type = SCAN_TYPE_CSEC  # Change as needed for testing
 
         scan_type = scan_engine
     # ------------- JIRA AUTOMATION PAYLOAD TESTING VARIABLES ----------------- #
@@ -141,14 +133,12 @@ def main():
         
             # Check if the scan id provided by the user is the same as the scan IDs from the URL
             if SCAN_ID != result_ids.get('scan_id'):
-                log.error(f"Scan ID {SCAN_ID} did not match the scan ID from the URL")
-                return
+                raise ValueError(f"Scan ID {SCAN_ID} did not match the scan ID from the URL")
             
             # Check if the scan id provided by the user really exists
             result_info = cx_api_actions.get_dast_scan_result_detailed_info(result_id, scan_id)
             if result_info is None:
-                log.error(f"Scan ID {SCAN_ID} is empty or does not exist")
-                return
+                raise ValueError(f"Scan ID {SCAN_ID} is empty or does not exist")
 
             # JIRA to CX Mapping
             dast_triage_values_mapping = {
@@ -164,15 +154,15 @@ def main():
 
             if dast_update_response == "OK":
                 log.info(f"[DAST] Successfully updated the state and severity of Result ID: {wrapped_result_id} to State: {cx_state} Severity: {cx_severity}")
+                jira_api_actions.update_successful_comment_issue(jira_issue, log, TRIAGE_UPDATE_STAGE)
             else:
-                log.error(f"[DAST] Failed to update the state and severity of Result ID: {wrapped_result_id}")
+                raise ValueError(f"[DAST] Failed to update the state and severity of Result ID: {wrapped_result_id}")
 
         else:
 
             scan_details = cx_api_actions.get_scan_details(SCAN_ID)
             if scan_details is None:
-                log.error(f"Scan ID {SCAN_ID} is empty or does not exist")
-                return
+                raise ValueError(f"Scan ID {SCAN_ID} is empty or does not exist")
             
             project_id = scan_details.get('projectId')
             scan_id = scan_details.get('id')
@@ -190,8 +180,7 @@ def main():
 
                 scan_results = cx_api_actions.get_sast_results(SCAN_ID, SAST_VULN_ID)
                 if scan_results is None:
-                    log.error(f"Scan ID {SCAN_ID} is empty or does not exist")
-                    return
+                    raise ValueError(f"Scan ID {SCAN_ID} is empty or does not exist")
                 
                 cx_state, cx_severity, cx_score = _get_cx_state_severity_score(sast_triage_values_mapping, TRIAGE_STATUS)
 
@@ -205,8 +194,9 @@ def main():
                     # Expecting None 
                     if sast_predicate_response is None:
                         log.info(f"[SAST] Successfully updated the state and severity of Vulnerability ID: {wrapped_similarity_id} to State: {cx_state} Severity: {cx_severity}")
+                        jira_api_actions.update_successful_comment_issue(jira_issue, log, TRIAGE_UPDATE_STAGE)
                     else:
-                        log.error(f"[SAST] Failed to update the state and severity of Vulnerability ID: {wrapped_similarity_id}")
+                        raise ValueError(f"[SAST] Failed to update the state and severity of Vulnerability ID: {wrapped_similarity_id}")
 
             elif scan_type == SCAN_TYPE_SCA:
                 log.info(f"Scan Type: {scan_type}")
@@ -233,8 +223,9 @@ def main():
                 # Expecting None 
                 if change_state_action is None and change_score_action is None:
                     log.info(f"[SCA] Successfully updated the state and severity of Package: {package_id} to State: {cx_state} Severity: {cx_severity}")
+                    jira_api_actions.update_successful_comment_issue(jira_issue, log, TRIAGE_UPDATE_STAGE)
                 else:
-                    log.error(f"[SCA] Failed to update the state and severity of Package: {package_id}")
+                    raise ValueError(f"[SCA] Failed to update the state and severity of Package: {package_id}")
 
             elif scan_type == SCAN_TYPE_CSEC:
                 log.info(f"Scan Type: {scan_type}")
@@ -263,13 +254,18 @@ def main():
                 if csec_triage_vuln_update is not None:
                     if csec_triage_vuln_update.get('success') is True:
                         log.info(f"[CSEC] Successfully updated the state and severity of Package: {package_id} to State: {cx_state} Severity: {cx_severity}")
+                        jira_api_actions.update_successful_comment_issue(jira_issue, log, TRIAGE_UPDATE_STAGE)
+                    else:
+                        raise ValueError(f"[CSEC] Failed to update the state and severity of Package: {package_id}")
                 else:
-                    log.error(f"[CSEC] Failed to update the state and severity of Package: {package_id}")
+                    raise ValueError(f"[CSEC] Failed to update the state and severity of Package: {package_id}")
                 
             else:
                 log.warning(f"The {scan_type} Scan type is not supported by this workflow automation.")
 
+
     except ValueError as value_error:
+        jira_api_actions.update_exception_comment_issue(jira_issue, log, value_error)
         log.error(f"Value Error: {value_error}")
         return 1
     except Exception as e:
