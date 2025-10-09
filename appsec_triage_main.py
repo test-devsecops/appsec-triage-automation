@@ -44,7 +44,7 @@ def main():
 
         try:
             field_map = load_map('config/field_mapping.yml',parent_field='fields')
-            user_type = load_map('config/user_type.yml',parent_field='user_type')
+            # user_type = load_map('config/user_type.yml',parent_field='user_type')
         except Exception as e:
             log.error(f"Failed to load yaml mapping: {e}")
             jira_api_actions.populate_exception_comment_issue(jira_issue, log)
@@ -73,19 +73,19 @@ def main():
                 sast_combined = sast_jira | sast_details
                 parent_data['branch_name'] = sast_details.get("branch_name")
                 parent_data['project_name'] = sast_details.get("project_name")
-                parent_data['support_group'] = {'name' : user_type.get('support_group')}
                 parent_data['lbu'] = sast_details.get('lbu')
+                # parent_data['support_group'] = {'name' : user_type.get('support_group')}
 
                 parenttask_to_jira_keys = {field_map.get(k, k): v for k, v in parent_data.items()}
 
-                log.info(f"Assigning Parent issue to group")
+                # log.info(f"Assigning Parent issue to group")
 
                 # Updates the Parent task with support group 
-                jira_api_actions.update_issue(parenttask_to_jira_keys, jira_issue)
+                # jira_api_actions.update_issue(parenttask_to_jira_keys, jira_issue)
 
-                log.info(f"Assigning user to parent issue")
+                # log.info(f"Assigning user to parent issue")
                 # Assign parent task with user
-                parenttask_to_jira_keys['assignee'] = {'name' : user_type.get('assignee')}
+                # parenttask_to_jira_keys['assignee'] = {'name' : user_type.get('assignee')}
                 jira_api_actions.update_issue(parenttask_to_jira_keys, jira_issue)
 
                 # Create subtasks
@@ -116,20 +116,20 @@ def main():
                 sca_combined = sca_jira | sca_details
                 parent_data['branch_name'] = sca_details.get("branch_name")
                 parent_data['project_name'] = sca_details.get("project_name")
-                parent_data['support_group'] = {'name' : user_type.get('support_group')}
-                parent_data['lbu'] = sast_details.get('lbu')
+                parent_data['lbu'] = sca_details.get('lbu')
+                # parent_data['support_group'] = {'name' : user_type.get('support_group')}
 
                 parenttask_to_jira_keys = {field_map.get(k, k): v for k, v in parent_data.items()}
 
-                log.info(f"Assigning Parent issue to group")
+                # log.info(f"Assigning Parent issue to group")
 
                 # Updates the Parent task with support group 
-                jira_api_actions.update_issue(parenttask_to_jira_keys, jira_issue)
+                # jira_api_actions.update_issue(parenttask_to_jira_keys, jira_issue)
 
-                log.info(f"Assigning user to parent issue")
+                # log.info(f"Assigning user to parent issue")
 
                 # Assign parent task with user
-                parenttask_to_jira_keys['assignee'] = {'name' : user_type.get('assignee')}
+                # parenttask_to_jira_keys['assignee'] = {'name' : user_type.get('assignee')}
                 jira_api_actions.update_issue(parenttask_to_jira_keys, jira_issue)
 
                 # print(json.dumps(parent_data,indent=4))
@@ -161,20 +161,20 @@ def main():
                 csec_combined = csec_jira | csec_details
                 parent_data['branch_name'] = csec_details.get("branch_name")
                 parent_data['project_name'] = csec_details.get("project_name")
-                parent_data['support_group'] = {'name' : user_type.get('support_group')}
-                parent_data['lbu'] = sast_details.get('lbu')
+                parent_data['lbu'] = csec_details.get('lbu')
+                # parent_data['support_group'] = {'name' : user_type.get('support_group')}
 
                 parenttask_to_jira_keys = {field_map.get(k, k): v for k, v in parent_data.items()}
 
-                log.info(f"Assigning Parent issue to group")
+                # log.info(f"Assigning Parent issue to group")
 
                 # Updates the Parent task with support group 
-                jira_api_actions.update_issue(parenttask_to_jira_keys, jira_issue)
+                # jira_api_actions.update_issue(parenttask_to_jira_keys, jira_issue)
 
-                log.info(f"Assigning user to parent issue")
+                # log.info(f"Assigning user to parent issue")
 
                 # Assign parent task with user
-                parenttask_to_jira_keys['assignee'] = {'name' : user_type.get('assignee')}
+                # parenttask_to_jira_keys['assignee'] = {'name' : user_type.get('assignee')}
                 jira_api_actions.update_issue(parenttask_to_jira_keys, jira_issue)
 
                 # Create subtasks
@@ -207,18 +207,18 @@ def main():
                 dast_combined = dast_jira | dast_details
                 parent_data['branch_name'] = dast_details.get("branch_name")
                 parent_data['project_name'] = dast_details.get("project_name")
-                parent_data['support_group'] = {'name' : user_type.get('support_group')}
                 parent_data['lbu'] = dast_details.get('lbu')
+                # parent_data['support_group'] = {'name' : user_type.get('support_group')}
 
                 parenttask_to_jira_keys = {field_map.get(k, k): v for k, v in parent_data.items()}
 
                 # Updates the Parent task with support group 
-                jira_api_actions.update_issue(parenttask_to_jira_keys, jira_issue)
+                # jira_api_actions.update_issue(parenttask_to_jira_keys, jira_issue)
 
-                log.info(f"Assigning user to parent issue")
+                # log.info(f"Assigning user to parent issue")
 
                 # Assign parent task with user
-                parenttask_to_jira_keys['assignee'] = {'name' : user_type.get('assignee')}
+                # parenttask_to_jira_keys['assignee'] = {'name' : user_type.get('assignee')}
                 jira_api_actions.update_issue(parenttask_to_jira_keys, jira_issue)
 
                 appsec_subtask.create_dast_subtask(jira_api_actions, dast_combined, field_map)

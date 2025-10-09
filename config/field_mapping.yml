@@ -25,12 +25,10 @@ fields:
   project_name: customfield_16501
   lbu: customfield_16500
   vulnerability_name: customfield_16505
-  scan_type: customfield_16503
   project_code: customfield_16502
   cve_id: customfield_16803
   package_name: customfield_16803
   vulnerability: customfield_16805 # using vuln id 1 for subtask
-  support_group: customfield_14225 # to allow user to be assigned
   result_category: customfield_16805 # using vuln id 1 for subtask
 default_placeholder:
   justification_default: 'Please Input Justification'

@@ -269,6 +269,7 @@ def main():
         log.error(f"Value Error: {value_error}")
         return 1
     except Exception as e:
+        jira_api_actions.update_exception_comment_issue(jira_issue, log, value_error)
         log.error(f"Unexpected error: {e}")
         return 1
 
