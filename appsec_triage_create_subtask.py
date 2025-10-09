@@ -80,7 +80,7 @@ def create_sca_subtask(api_action: JiraApiActions, data: dict, field_mapping: di
                 "key": data.get("jira_issue")
             },
         }
-
+        package_info = data.get("package")
         for values in data.get("package"):
             desc = ""
             for key, value in values.get("cve_description").items():
@@ -101,6 +101,7 @@ def create_sca_subtask(api_action: JiraApiActions, data: dict, field_mapping: di
 
             vuln_payload = {
                 "summary": f"SCA | {values.get('cve_number')}",
+                "package_name_or_version" : package_info.get('package_name'),
                 "cve_number": values.get('cve_number'),
                 "cvss_score": str(values.get('cvss_score')),
                 "cve_description": desc,

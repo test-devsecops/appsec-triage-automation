@@ -238,6 +238,11 @@ def main():
 
     except Exception as e:
         log.error(f"Unexpected error: {e}")
+        log.error(
+        "Jira Populate failed."
+        "[DEBUG GUIDE] If the issue persists, check config/field_mapping.yml for incorrect mappings "
+        "between JIRA and the local configuration."
+        )
         return 1
 
 if __name__ == "__main__":

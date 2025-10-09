@@ -96,14 +96,13 @@ def main():
 
         # SCA
         SCA_PACKAGE_NAME = parent_data.get("package_name_or_version")
-        SCA_CVE_ID = parent_data.get("cve_id")
+        SCA_CVE_ID = parent_data.get("cve_number")
 
 
         # CSEC
         CSEC_PACKAGE_ID = parent_data.get("package_name_or_version")
         CSEC_CVE_ID = parent_data.get("cve_number")
 
-        
         # DAST
         DAST_RESULT_URL = parent_data.get("url")
 
@@ -112,7 +111,6 @@ def main():
         SCAN_TYPE_CSEC = "CSEC"
         SCAN_TYPE_DAST = "DAST"
 
-        scan_type = scan_engine
     # ------------- JIRA AUTOMATION PAYLOAD TESTING VARIABLES ----------------- #
 
         access_token_manager = AccessTokenManager(logger=log)
@@ -121,6 +119,7 @@ def main():
         helper = HelperFunctions()
         cx_helper = CxHelperFunctions()
 
+        scan_type = scan_engine
 
         if scan_type == SCAN_TYPE_DAST:
             log.info(f"Scan Type: {scan_type}")
@@ -211,9 +210,12 @@ def main():
 
                 package_name, package_version = cx_helper.set_package_and_version(SCA_PACKAGE_NAME)
                 cx_state, cx_severity, cx_score = _get_cx_state_severity_score(sca_triage_values_mapping, TRIAGE_STATUS)
+                # print(SCA_CVE_ID)
 
                 sca_vuln_details = cx_api_actions.get_sca_vulnerability_details_with_CVE_graphql(scan_id, project_id, package_name, package_version, SCA_CVE_ID)
+                # print(sca_vuln_details)
                 cve_details = helper.get_nested(sca_vuln_details, ['data', 'vulnerabilitiesRisksByScanId', 'items'])
+                # print(cve_details)
                 package_repo = cve_details[0].get('packageInfo').get('packageRepository')
                 package_id = cve_details[0].get('packageId')
 
@@ -269,8 +271,13 @@ def main():
         log.error(f"Value Error: {value_error}")
         return 1
     except Exception as e:
-        jira_api_actions.update_exception_comment_issue(jira_issue, log, value_error)
+        jira_api_actions.update_exception_comment_issue(jira_issue, log, "Unexpected Error, Please check logs")
         log.error(f"Unexpected error: {e}")
+        log.error(
+        "CX Update Triage failed."
+        "\n\t[DEBUG GUIDE] If the issue persists, check config/field_mapping.yml for incorrect mappings "
+        "\n\tbetween JIRA and the local configuration."
+        )
         return 1
 
 

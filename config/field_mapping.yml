@@ -26,7 +26,6 @@ fields:
   lbu: customfield_16500
   vulnerability_name: customfield_16505
   project_code: customfield_16502
-  cve_id: customfield_16803
   package_name: customfield_16803
   vulnerability: customfield_16805 # using vuln id 1 for subtask
   result_category: customfield_16805 # using vuln id 1 for subtask
