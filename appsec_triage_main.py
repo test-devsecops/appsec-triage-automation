@@ -74,6 +74,7 @@ def main():
                 parent_data['branch_name'] = sast_details.get("branch_name")
                 parent_data['project_name'] = sast_details.get("project_name")
                 parent_data['lbu'] = sast_details.get('lbu')
+
                 # parent_data['support_group'] = {'name' : user_type.get('support_group')}
 
                 parenttask_to_jira_keys = {field_map.get(k, k): v for k, v in parent_data.items()}
@@ -88,6 +89,8 @@ def main():
                 # parenttask_to_jira_keys['assignee'] = {'name' : user_type.get('assignee')}
                 jira_api_actions.update_issue(parenttask_to_jira_keys, jira_issue)
 
+
+                sast_combined['reporter'] = jira_issue_fields.get("reporter")
                 # Create subtasks
                 appsec_subtask.create_sast_subtask(jira_api_actions, sast_combined, field_map)
                 log.info(f"Populating Jira successful")
@@ -131,6 +134,7 @@ def main():
                 # Assign parent task with user
                 # parenttask_to_jira_keys['assignee'] = {'name' : user_type.get('assignee')}
                 jira_api_actions.update_issue(parenttask_to_jira_keys, jira_issue)
+                sca_combined['reporter'] = jira_issue_fields.get("reporter")
 
                 # print(json.dumps(parent_data,indent=4))
                 # Create subtasks
@@ -177,6 +181,8 @@ def main():
                 # parenttask_to_jira_keys['assignee'] = {'name' : user_type.get('assignee')}
                 jira_api_actions.update_issue(parenttask_to_jira_keys, jira_issue)
 
+                csec_combined['reporter'] = jira_issue_fields.get("reporter")
+
                 # Create subtasks
                 appsec_subtask.create_csec_subtask(jira_api_actions, csec_combined, field_map)
                 log.info(f"Populating Jira successful")
@@ -208,6 +214,7 @@ def main():
                 parent_data['branch_name'] = dast_details.get("branch_name")
                 parent_data['project_name'] = dast_details.get("project_name")
                 parent_data['lbu'] = dast_details.get('lbu')
+                parent_data['reporter'] = jira_issue_fields.get("reporter")
                 # parent_data['support_group'] = {'name' : user_type.get('support_group')}
 
                 parenttask_to_jira_keys = {field_map.get(k, k): v for k, v in parent_data.items()}
@@ -220,6 +227,8 @@ def main():
                 # Assign parent task with user
                 # parenttask_to_jira_keys['assignee'] = {'name' : user_type.get('assignee')}
                 jira_api_actions.update_issue(parenttask_to_jira_keys, jira_issue)
+
+                dast_combined['reporter'] = jira_issue_fields.get("reporter")
 
                 appsec_subtask.create_dast_subtask(jira_api_actions, dast_combined, field_map)
                 log.info(f"Populating Jira successful")
