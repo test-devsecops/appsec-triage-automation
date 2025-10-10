@@ -55,7 +55,7 @@ class JiraHelperFunctions:
     def parse_dast_input(data: dict):
         try:
 
-            urls = [v for k, v in data.items() if k.startswith("url")] 
+            urls = [v for k, v in data.items() if k.startswith("vuln_url_")] 
             formatted_data = {
                 "scan_id" : data.get("scan_id"),
                 "urls" : urls

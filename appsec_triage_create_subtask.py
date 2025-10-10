@@ -1,9 +1,12 @@
 from jira_utility.jira_api_actions import JiraApiActions
 import json
 from utils.logger import Logger
+from utils.yml_file_utility import load_map
 
 def create_sast_subtask(api_action: JiraApiActions, data: dict, field_mapping: dict):
     log = Logger("appsec_triage")
+    placeholder = load_map(path='config/field_mapping.yml', parent_field='default_placeholder')
+
     try:
         log.info(f"Creating subtasks")
         main_payload = {
@@ -44,8 +47,8 @@ def create_sast_subtask(api_action: JiraApiActions, data: dict, field_mapping: d
                 "summary": f"SAST | {values.get('vulnerability_name')}",
                 "vulnerability": values.get('vulnerability_id'),
                 "vulnerability_name": values.get('vulnerability_name'),
-                "justification": "Please Input Justification",
-                "triage_status": {"value": "Please select value"},
+                "justification": placeholder.get('justification_default'),
+                "triage_status": {"value": placeholder.get('triage_status_default')},
                 "description": desc
             }
 
@@ -65,6 +68,7 @@ def create_sast_subtask(api_action: JiraApiActions, data: dict, field_mapping: d
 
 def create_sca_subtask(api_action: JiraApiActions, data: dict, field_mapping: dict):
     log = Logger("appsec_triage")
+    placeholder = load_map(path='config/field_mapping.yml', parent_field='default_placeholder')
     try:
         log.info(f"Creating subtasks")
         main_payload = {
@@ -76,7 +80,7 @@ def create_sca_subtask(api_action: JiraApiActions, data: dict, field_mapping: di
                 "key": data.get("jira_issue")
             },
         }
-
+        package_info = data.get("package")
         for values in data.get("package"):
             desc = ""
             for key, value in values.get("cve_description").items():
@@ -97,12 +101,13 @@ def create_sca_subtask(api_action: JiraApiActions, data: dict, field_mapping: di
 
             vuln_payload = {
                 "summary": f"SCA | {values.get('cve_number')}",
+                "package_name_or_version" : package_info.get('package_name'),
                 "cve_number": values.get('cve_number'),
                 "cvss_score": str(values.get('cvss_score')),
                 "cve_description": desc,
                 "epss_score" : str(values.get('epss_score')),
-                "justification" : "Please Input Justification",
-                "triage_status": {"value": "Please select value"},
+                "justification": placeholder.get('justification_default'),
+                "triage_status": {"value": placeholder.get('triage_status_default')},
                 # "description": values.get('cve_number')
             }
 
@@ -121,6 +126,7 @@ def create_sca_subtask(api_action: JiraApiActions, data: dict, field_mapping: di
 
 def create_csec_subtask(api_action: JiraApiActions, data: dict, field_mapping: dict):
     log = Logger("appsec_triage")
+    placeholder = load_map(path='config/field_mapping.yml', parent_field='default_placeholder')
     try:
         log.info(f"Creating subtasks")
         main_payload = {
@@ -161,8 +167,8 @@ def create_csec_subtask(api_action: JiraApiActions, data: dict, field_mapping: d
                 "cvss_score": str(values.get('cvss_score')),
                 "cve_description": desc,
                 "epss_score" : str(values.get('epss_score')),
-                "justification" : "Please Input Justification",
-                "triage_status": {"value": "Please select value"},
+                "justification": placeholder.get('justification_default'),
+                "triage_status": {"value": placeholder.get('triage_status_default')},
             }
 
             payload = main_payload | vuln_payload
@@ -182,6 +188,7 @@ def create_csec_subtask(api_action: JiraApiActions, data: dict, field_mapping: d
 
 def create_dast_subtask(api_action: JiraApiActions, data: dict, field_mapping: dict):
     log = Logger("appsec_triage")
+    placeholder = load_map(path='config/field_mapping.yml', parent_field='default_placeholder')
     try:
         log.info(f"Creating subtasks")
         main_payload = {
@@ -215,12 +222,12 @@ def create_dast_subtask(api_action: JiraApiActions, data: dict, field_mapping: d
 
             vuln_payload = {
                 "summary": f"DAST | {values.get('result_category')}",
-                "url" : values.get("vulnerability_url"),
+                "url" : values.get("result_url"),
                 "description" : desc,
-                "justification" : "Please Input justification",
-                # will need to change to use from data itself, not hardcoded
-                "triage_status": {"value": "Please select value"},
-                "severity" : values.get("result_description").get("severity")
+                "severity" : values.get("result_description").get("severity"),
+                "result_category" : values.get("result_category"),
+                "justification": placeholder.get('justification_default'),
+                "triage_status": {"value": placeholder.get('triage_status_default')},
             }
 
             payload = main_payload | vuln_payload

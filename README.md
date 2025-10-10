@@ -29,7 +29,6 @@ checkmarx_utility/
     ├── cx_token_manager.py
 config/
     ├── field_mapping.yml
-    ├── user_type.yml
 .github/
     └── workflows/
         ├── appsec_triage_update_workflow.yml
@@ -70,7 +69,6 @@ utils/
   - **cx_token_manager.py**: Handles Checkmarx API authentication tokens.
 - **config/**: Directory for configuration files.
   - **field_mapping.yml**: YAML file mapping fields between Jira and Checkmarx.
-  - **user_type.yml**: YAML file defining user types and roles.
 - **.github/**: GitHub configuration directory.
   - **workflows/**: Contains GitHub Actions workflow files for CI/CD automation.
     - **appsec_triage_update_workflow.yml**: Workflow for updating triage findings.
