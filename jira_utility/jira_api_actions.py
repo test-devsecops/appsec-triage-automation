@@ -16,8 +16,9 @@ import json
 
 class JiraApiActions:
 
-    def __init__(self):
-        self.httpRequest = HttpRequests()
+    def __init__(self, logger):
+        self.logger = logger
+        self.httpRequest = HttpRequests(logger)
         self.apiEndpoints = JiraApiEndpoints()
         self.config = Config()
 
@@ -93,7 +94,7 @@ class JiraApiActions:
         return response
 
     @ExceptionHandler.handle_exception
-    def create_subtask(self, added_payload):
+    def create_subtask(self, added_payload, subtask_id):
 
         endpoint = self.apiEndpoints.create_issue()
         url = f"https://{self.jira_url}{endpoint}"
@@ -110,7 +111,7 @@ class JiraApiActions:
                 },
                 
                 "issuetype": {
-                    "name": "Sub-task"
+                    "name": subtask_id
                 },
                 "description" : "Sub-task"
             }

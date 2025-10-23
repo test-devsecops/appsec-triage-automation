@@ -6,11 +6,13 @@ from utils.yml_file_utility import load_map
 def create_sast_subtask(api_action: JiraApiActions, data: dict, field_mapping: dict):
     log = Logger("appsec_triage")
     placeholder = load_map(path='config/field_mapping.yml', parent_field='default_placeholder')
+    subtask = load_map(path='config/field_mapping.yml', parent_field='subtask')
+    subtask_id = subtask.get("sast")
 
     try:
         log.info(f"Creating subtasks")
         main_payload = {
-            "lbu": data.get("lbu"),
+            "github_org": data.get("github_org"),
             "project_name": data.get("project_name"),
             "branch_name": data.get("branch_name"),
             "scan_id": data.get("scan_id"),
@@ -59,9 +61,14 @@ def create_sast_subtask(api_action: JiraApiActions, data: dict, field_mapping: d
             subtask_to_jira_keys = {field_mapping.get(k, k): v for k, v in payload.items()}
 
             try:
-                api_action.create_subtask(subtask_to_jira_keys)
+                subtask = api_action.create_subtask(subtask_to_jira_keys, subtask_id)
+                if not subtask:
+                    raise Exception("Unable to create subtask, issue might be that the issue type does not exist or empty")
             except Exception as e:
                 log.error(f"Failed to create subtask for vulnerability {values.get('vulnerability_id')}: {e}")
+                return None
+            
+            return True
 
     except Exception as e:
         log.error(f"Error in create_sast_subtask: {e}")
@@ -70,10 +77,13 @@ def create_sast_subtask(api_action: JiraApiActions, data: dict, field_mapping: d
 def create_sca_subtask(api_action: JiraApiActions, data: dict, field_mapping: dict):
     log = Logger("appsec_triage")
     placeholder = load_map(path='config/field_mapping.yml', parent_field='default_placeholder')
+    subtask = load_map(path='config/field_mapping.yml', parent_field='subtask')
+    subtask_id = subtask.get("sca")
+
     try:
         log.info(f"Creating subtasks")
         main_payload = {
-            "lbu": data.get("lbu"),
+            "github_org": data.get("github_org"),
             "project_name": data.get("project_name"),
             "branch_name": data.get("branch_name"),
             "scan_id": data.get("scan_id"),
@@ -118,9 +128,14 @@ def create_sca_subtask(api_action: JiraApiActions, data: dict, field_mapping: di
             subtask_to_jira_keys = {field_mapping.get(k, k): v for k, v in payload.items()}
 
             try:
-                api_action.create_subtask(subtask_to_jira_keys)
+                subtask = api_action.create_subtask(subtask_to_jira_keys, subtask_id)
+                if not subtask:
+                    raise Exception("Unable to create subtask, issue might be that the issue type does not exist or empty")
             except Exception as e:
                 log.error(f"Failed to create subtask for cve {values.get('cve_number')}: {e}")
+                return None
+
+            return True 
 
     except Exception as e:
         log.error(f"Error in create_sast_subtask: {e}")
@@ -128,10 +143,13 @@ def create_sca_subtask(api_action: JiraApiActions, data: dict, field_mapping: di
 def create_csec_subtask(api_action: JiraApiActions, data: dict, field_mapping: dict):
     log = Logger("appsec_triage")
     placeholder = load_map(path='config/field_mapping.yml', parent_field='default_placeholder')
+    subtask = load_map(path='config/field_mapping.yml', parent_field='subtask')
+    subtask_id = subtask.get("csec")
+
     try:
         log.info(f"Creating subtasks")
         main_payload = {
-            "lbu": data.get("lbu"),
+            "github_org": data.get("github_org"),
             "project_name": data.get("project_name"),
             "branch_name": data.get("branch_name"),
             "scan_id": data.get("scan_id"),
@@ -180,9 +198,15 @@ def create_csec_subtask(api_action: JiraApiActions, data: dict, field_mapping: d
             subtask_to_jira_keys = {field_mapping.get(k, k): v for k, v in payload.items()}
 
             try:
-                api_action.create_subtask(subtask_to_jira_keys)
+                subtask = api_action.create_subtask(subtask_to_jira_keys, subtask_id)
+                if not subtask:
+                    raise Exception("Unable to create subtask, issue might be that the issue type does not exist or empty")
+            
             except Exception as e:
                 log.error(f"Failed to create subtask for cve {values.get('cve_number')}: {e}")
+                return None
+
+            return True
 
     except Exception as e:
         log.error(f"Error in create_csec_subtask: {e}")
@@ -190,10 +214,13 @@ def create_csec_subtask(api_action: JiraApiActions, data: dict, field_mapping: d
 def create_dast_subtask(api_action: JiraApiActions, data: dict, field_mapping: dict):
     log = Logger("appsec_triage")
     placeholder = load_map(path='config/field_mapping.yml', parent_field='default_placeholder')
+    subtask = load_map(path='config/field_mapping.yml', parent_field='subtask')
+    subtask_id = subtask.get("dast")
+
     try:
         log.info(f"Creating subtasks")
         main_payload = {
-            "lbu": data.get("lbu"),
+            "github_org": data.get("github_org"),
             "environment_name": data.get("env_name"),
             "branch_name": data.get("branch_name"),
             "scan_id": data.get("scan_id"),
@@ -237,9 +264,14 @@ def create_dast_subtask(api_action: JiraApiActions, data: dict, field_mapping: d
             subtask_to_jira_keys = {field_mapping.get(k, k): v for k, v in payload.items()}
 
             try:
-                api_action.create_subtask(subtask_to_jira_keys)
+                subtask = api_action.create_subtask(subtask_to_jira_keys, subtask_id)
+                if not subtask:
+                    raise Exception("Unable to create subtask, issue might be that the issue type does not exist or empty")
             except Exception as e:
                 log.error(f"Failed to create subtask for cve {values.get('cve_number')}: {e}")
+                return None
+            
+            return True
 
     except Exception as e:
         log.error(f"Error in create_csec_subtask: {e}")
