@@ -23,12 +23,17 @@ fields:
   branch_name: customfield_16507
   severity: customfield_16506
   project_name: customfield_16501
-  lbu: customfield_16500
+  github_org: customfield_16500
   vulnerability_name: customfield_16505
   project_code: customfield_16502
   package_name: customfield_16803
   vulnerability: customfield_16805 # using vuln id 1 for subtask
   result_category: customfield_16805 # using vuln id 1 for subtask
+subtask:
+  sast: "Sub-task"
+  sca: "Sub-task"
+  csec: "Sub-task"
+  dast: "Sub-task"
 default_placeholder:
   justification_default: 'Please Input Justification'
   triage_status_default: 'Please select value'

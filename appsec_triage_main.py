@@ -30,7 +30,7 @@ def main():
         # global variable for comment
         PULL_STAGE = True
 
-        jira_api_actions = JiraApiActions()
+        jira_api_actions = JiraApiActions(logger=log)
 
 
         try:
@@ -73,7 +73,7 @@ def main():
                 sast_combined = sast_jira | sast_details
                 parent_data['branch_name'] = sast_details.get("branch_name")
                 parent_data['project_name'] = sast_details.get("project_name")
-                parent_data['lbu'] = sast_details.get('lbu')
+                parent_data['github_org'] = sast_details.get('github_org')
 
                 # parent_data['support_group'] = {'name' : user_type.get('support_group')}
 
@@ -92,7 +92,9 @@ def main():
 
                 sast_combined['reporter'] = jira_issue_fields.get("reporter")
                 # Create subtasks
-                appsec_subtask.create_sast_subtask(jira_api_actions, sast_combined, field_map)
+                sast_subtask = appsec_subtask.create_sast_subtask(jira_api_actions, sast_combined, field_map)
+                if not sast_subtask:
+                    raise Exception("Failed in creating SAST subtask")
                 log.info(f"Populating Jira successful")
                 jira_api_actions.update_successful_comment_issue(jira_issue, log, PULL_STAGE)
             except TypeError as e:
@@ -119,7 +121,7 @@ def main():
                 sca_combined = sca_jira | sca_details
                 parent_data['branch_name'] = sca_details.get("branch_name")
                 parent_data['project_name'] = sca_details.get("project_name")
-                parent_data['lbu'] = sca_details.get('lbu')
+                parent_data['github_org'] = sca_details.get('github_org')
                 # parent_data['support_group'] = {'name' : user_type.get('support_group')}
 
                 parenttask_to_jira_keys = {field_map.get(k, k): v for k, v in parent_data.items()}
@@ -138,7 +140,9 @@ def main():
 
                 # print(json.dumps(parent_data,indent=4))
                 # Create subtasks
-                appsec_subtask.create_sca_subtask(jira_api_actions, sca_combined, field_map)
+                sca_subtask = appsec_subtask.create_sca_subtask(jira_api_actions, sca_combined, field_map)
+                if not sca_subtask:
+                    raise Exception("Failed in creating SCA Subtask")
                 log.info(f"Populating Jira successful")
                 jira_api_actions.update_successful_comment_issue(jira_issue, log, PULL_STAGE)
             except TypeError as e:
@@ -165,7 +169,7 @@ def main():
                 csec_combined = csec_jira | csec_details
                 parent_data['branch_name'] = csec_details.get("branch_name")
                 parent_data['project_name'] = csec_details.get("project_name")
-                parent_data['lbu'] = csec_details.get('lbu')
+                parent_data['github_org'] = csec_details.get('github_org')
                 # parent_data['support_group'] = {'name' : user_type.get('support_group')}
 
                 parenttask_to_jira_keys = {field_map.get(k, k): v for k, v in parent_data.items()}
@@ -184,7 +188,10 @@ def main():
                 csec_combined['reporter'] = jira_issue_fields.get("reporter")
 
                 # Create subtasks
-                appsec_subtask.create_csec_subtask(jira_api_actions, csec_combined, field_map)
+                csec_subtask = appsec_subtask.create_csec_subtask(jira_api_actions, csec_combined, field_map)
+                if not csec_subtask:
+                    raise Exception("Failed in Creating CSEC subtask")
+                
                 log.info(f"Populating Jira successful")
                 jira_api_actions.update_successful_comment_issue(jira_issue, log, PULL_STAGE)
             except TypeError as e:
@@ -213,7 +220,7 @@ def main():
                 dast_combined = dast_jira | dast_details
                 parent_data['branch_name'] = dast_details.get("branch_name")
                 parent_data['project_name'] = dast_details.get("project_name")
-                parent_data['lbu'] = dast_details.get('lbu')
+                parent_data['github_org'] = dast_details.get('github_org')
                 parent_data['reporter'] = jira_issue_fields.get("reporter")
                 # parent_data['support_group'] = {'name' : user_type.get('support_group')}
 
@@ -230,7 +237,9 @@ def main():
 
                 dast_combined['reporter'] = jira_issue_fields.get("reporter")
 
-                appsec_subtask.create_dast_subtask(jira_api_actions, dast_combined, field_map)
+                dast_subtask = appsec_subtask.create_dast_subtask(jira_api_actions, dast_combined, field_map)
+                if not dast_subtask:
+                    raise Exception("Failed in creating DAST Subtask")
                 log.info(f"Populating Jira successful")
                 jira_api_actions.update_successful_comment_issue(jira_issue, log, PULL_STAGE)
             except TypeError as e:
