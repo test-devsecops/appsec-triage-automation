@@ -202,7 +202,7 @@ def main():
 
                 # JIRA to CX Mapping
                 sca_triage_values_mapping = {
-                    "False Positive": {"state": "NotExploitable"},
+                    "False Positive": {"state": "NotExploitable", "severity": "0.0"},
                     "Downgrade to High": {"state": "Confirmed", "severity": "7"},
                     "Downgrade to Medium": {"state": "Confirmed", "severity": "4"},
                     "Downgrade to Low": {"state": "Confirmed", "severity": "0.1"},
