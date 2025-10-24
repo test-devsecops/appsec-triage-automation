@@ -112,7 +112,7 @@ def create_sca_subtask(api_action: JiraApiActions, data: dict, field_mapping: di
 
             vuln_payload = {
                 "summary": f"SCA | {values.get('cve_number')}",
-                "package_name_or_version" : package_info.get('package_name'),
+                "package_name_or_version" : values.get('package_name'),
                 "cve_number": values.get('cve_number'),
                 "cvss_score": str(values.get('cvss_score')),
                 "cve_description": desc,
@@ -138,7 +138,7 @@ def create_sca_subtask(api_action: JiraApiActions, data: dict, field_mapping: di
             return True 
 
     except Exception as e:
-        log.error(f"Error in create_sast_subtask: {e}")
+        log.error(f"Error in create_sca_subtask: {e}")
 
 def create_csec_subtask(api_action: JiraApiActions, data: dict, field_mapping: dict):
     log = Logger("appsec_triage")
@@ -252,7 +252,6 @@ def create_dast_subtask(api_action: JiraApiActions, data: dict, field_mapping: d
                 "summary": f"DAST | {values.get('result_category')}",
                 "url" : values.get("result_url"),
                 "description" : desc,
-                "severity" : values.get("result_description").get("severity"),
                 "result_category" : values.get("result_category"),
                 "justification": placeholder.get('justification_default'),
                 "triage_status": {"value": placeholder.get('triage_status_default')},
