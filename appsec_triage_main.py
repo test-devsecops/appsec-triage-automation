@@ -90,7 +90,7 @@ def main():
                 jira_api_actions.update_issue(parenttask_to_jira_keys, jira_issue)
 
 
-                # sast_combined['reporter'] = jira_issue_fields.get("reporter")
+                sast_combined['reporter'] = jira_issue_fields.get("reporter")
                 # Create subtasks
                 sast_subtask = appsec_subtask.create_sast_subtask(jira_api_actions, sast_combined, field_map)
                 if not sast_subtask:
@@ -136,7 +136,7 @@ def main():
                 # Assign parent task with user
                 # parenttask_to_jira_keys['assignee'] = {'name' : user_type.get('assignee')}
                 jira_api_actions.update_issue(parenttask_to_jira_keys, jira_issue)
-                # sca_combined['reporter'] = jira_issue_fields.get("reporter")
+                sca_combined['reporter'] = jira_issue_fields.get("reporter")
 
                 # print(json.dumps(parent_data,indent=4))
                 # Create subtasks
@@ -185,7 +185,7 @@ def main():
                 # parenttask_to_jira_keys['assignee'] = {'name' : user_type.get('assignee')}
                 jira_api_actions.update_issue(parenttask_to_jira_keys, jira_issue)
 
-                # csec_combined['reporter'] = jira_issue_fields.get("reporter")
+                csec_combined['reporter'] = jira_issue_fields.get("reporter")
 
                 # Create subtasks
                 csec_subtask = appsec_subtask.create_csec_subtask(jira_api_actions, csec_combined, field_map)
@@ -235,7 +235,7 @@ def main():
                 # parenttask_to_jira_keys['assignee'] = {'name' : user_type.get('assignee')}
                 jira_api_actions.update_issue(parenttask_to_jira_keys, jira_issue)
 
-                # dast_combined['reporter'] = jira_issue_fields.get("reporter")
+                dast_combined['reporter'] = jira_issue_fields.get("reporter")
 
                 dast_subtask = appsec_subtask.create_dast_subtask(jira_api_actions, dast_combined, field_map)
                 if not dast_subtask:
