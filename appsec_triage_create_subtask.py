@@ -19,7 +19,6 @@ def create_sast_subtask(api_action: JiraApiActions, data: dict, field_mapping: d
             "parent": {
                 "key": data.get("jira_issue")
             },
-            "reporter" : {"name" : data.get("reporter").get("name")}
         }
 
         for values in data.get("vulnerability"):
