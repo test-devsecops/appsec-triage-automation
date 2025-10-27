@@ -19,6 +19,7 @@ def create_sast_subtask(api_action: JiraApiActions, data: dict, field_mapping: d
             "parent": {
                 "key": data.get("jira_issue")
             },
+            "reporter" : {"name" : data.get("reporter").get("name")}
         }
 
         for values in data.get("vulnerability"):
@@ -89,6 +90,7 @@ def create_sca_subtask(api_action: JiraApiActions, data: dict, field_mapping: di
             "parent": {
                 "key": data.get("jira_issue")
             },
+            "reporter" : {"name" : data.get("reporter").get("name")}
         }
         package_info = data.get("package")
         for values in data.get("package"):
@@ -155,6 +157,7 @@ def create_csec_subtask(api_action: JiraApiActions, data: dict, field_mapping: d
             "parent": {
                 "key": data.get("jira_issue")
             },
+            "reporter" : {"name" : data.get("reporter").get("name")}
         }
 
         package_info = data.get("package")
@@ -226,6 +229,7 @@ def create_dast_subtask(api_action: JiraApiActions, data: dict, field_mapping: d
             "parent": {
                 "key": data.get("jira_issue")
             },
+            "reporter" : {"name" : data.get("reporter").get("name")}
         }
 
         for values in data.get("findings"):
