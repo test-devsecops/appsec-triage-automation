@@ -15,14 +15,12 @@ class HelperFunctions:
     @staticmethod
     def get_github_org_name_simple(app_name):
         """
-        Extracts the github_org name directly after 'pru-' in the given project_name.
-        Does not validate against any JSON list.
+        Extracts the text before the first '/' in the given app_name.
+        If '/' is not present, returns '-'.
         """
-        match = re.search(r'^pru-([\w]+)', app_name, re.IGNORECASE)
-        if match:
-            return match.group(1).upper()
-        
-        return "Pru"
+        if "/" in app_name:
+            return app_name.split("/", 1)[0]
+        return "-"
 
     @staticmethod
     def is_readable(text):
@@ -51,4 +49,3 @@ class HelperFunctions:
     @staticmethod
     def shorten_strings_middle(s, front=6, back=4):
         return s if len(s) <= (front + back) else s[:front] + "..." + s[-back:]
-
