@@ -68,7 +68,7 @@ def create_sast_subtask(api_action: JiraApiActions, data: dict, field_mapping: d
                 log.error(f"Failed to create subtask for vulnerability {values.get('vulnerability_id')}: {e}")
                 return None
             
-            return True
+        return True
 
     except Exception as e:
         log.error(f"Error in create_sast_subtask: {e}")
@@ -136,7 +136,7 @@ def create_sca_subtask(api_action: JiraApiActions, data: dict, field_mapping: di
                 log.error(f"Failed to create subtask for cve {values.get('cve_number')}: {e}")
                 return None
 
-            return True 
+        return True 
 
     except Exception as e:
         log.error(f"Error in create_sca_subtask: {e}")
@@ -208,7 +208,7 @@ def create_csec_subtask(api_action: JiraApiActions, data: dict, field_mapping: d
                 log.error(f"Failed to create subtask for cve {values.get('cve_number')}: {e}")
                 return None
 
-            return True
+        return True
 
     except Exception as e:
         log.error(f"Error in create_csec_subtask: {e}")
@@ -273,7 +273,7 @@ def create_dast_subtask(api_action: JiraApiActions, data: dict, field_mapping: d
                 log.error(f"Failed to create subtask for cve {values.get('cve_number')}: {e}")
                 return None
             
-            return True
+        return True
 
     except Exception as e:
         log.error(f"Error in create_csec_subtask: {e}")

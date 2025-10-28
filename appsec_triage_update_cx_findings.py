@@ -43,7 +43,7 @@ def main():
 
         TRIAGE_UPDATE_STAGE = False
 
-        jira_api_actions = JiraApiActions()
+        jira_api_actions = JiraApiActions(log)
 
         try:
             jira_issue_data = jira_api_actions.get_issue(jira_issue)
