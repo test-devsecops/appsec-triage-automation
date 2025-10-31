@@ -25,8 +25,8 @@ fields:
   github_org: customfield_16500
   vulnerability_name: customfield_16505
   package_name: customfield_16803
-  vulnerability: customfield_16805 # using vuln id 1 for subtask
-  result_category: customfield_16805 # using vuln id 1 for subtask
+  vulnerability: customfield_16805
+  result_category: customfield_16805
 subtask:
   sast: "Sub-task"
   sca: "Sub-task"
