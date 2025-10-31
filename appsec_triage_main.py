@@ -221,9 +221,11 @@ def main():
                 parent_data['branch_name'] = dast_details.get("branch_name")
                 parent_data['project_name'] = dast_details.get("project_name")
                 parent_data['github_org'] = dast_details.get('github_org')
+                parent_data['environment_name'] = dast_details.get('env_name')
                 # parent_data['reporter'] = jira_issue_fields.get("reporter")
                 # parent_data['support_group'] = {'name' : user_type.get('support_group')}
 
+                
                 parenttask_to_jira_keys = {field_map.get(k, k): v for k, v in parent_data.items()}
 
                 # Updates the Parent task with support group 
