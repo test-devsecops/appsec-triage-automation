@@ -196,7 +196,6 @@ def main():
                 jira_api_actions.update_successful_comment_issue(jira_issue, log, PULL_STAGE)
             except TypeError as e:
                 log.error(f"CSEC details error: {e}")
-                print("PARENT DATA : ",parent_data.get('scan_id'))
                 jira_api_actions.populate_exception_comment_issue(jira_issue, log, scan_id=parent_data.get('scan_id'), error_message=str(e))
                 return 1
             except Exception as e:
