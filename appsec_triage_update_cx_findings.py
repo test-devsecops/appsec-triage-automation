@@ -87,6 +87,8 @@ def main():
         
         if JUSTIFICATION is None or JUSTIFICATION.lower() == 'please input justification':
             raise ValueError("No Justification found")
+        
+        JUSTIFICATION = f"{jira_issue} - {JUSTIFICATION}"
 
         SCAN_ID = parent_data.get("scan_id")
 
