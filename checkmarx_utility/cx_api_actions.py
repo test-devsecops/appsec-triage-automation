@@ -124,13 +124,19 @@ class CxApiActions:
                     { "score": "DESC" }
                 ],
                 "where": {
-                "packageInfo": {
-                    "and": [
-                    { "name": { "eq": package_name } },
-                    { "version": { "eq": package_version } }
-                    ]
-                }
+                "and": [
+                    {
+                    "packageInfo": {
+                        "and": [
+                        { "name":    { "eq": package_name } },
+                        { "version": { "eq": package_version } }
+                        ]
+                    }
+                    },
+                    { "severity": { "in": ["Critical", "High"] } }
+                ]
                 },
+
                 "isExploitablePathEnabled": True
             }
         }
@@ -169,7 +175,7 @@ class CxApiActions:
                         { "name": { "eq": vuln_id } },
                         { "version": { "eq": version } }
                         ]
-                    }
+                    },
                     }
                 ]
                 },
@@ -290,7 +296,8 @@ class CxApiActions:
                 },
                 "vulnerabilityFilter": {
                 "fromScore": 0,
-                "toScore": 10
+                "toScore": 10,
+                "severities": ["critical", "high"]
                 }
             }
         }
