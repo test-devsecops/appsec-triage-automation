@@ -24,7 +24,6 @@ fields:
   project_name: customfield_16501
   github_org: customfield_16500
   vulnerability_name: customfield_16505
-  package_name: customfield_16803
   vulnerability: customfield_16805
   result_category: customfield_16805
 subtask:
