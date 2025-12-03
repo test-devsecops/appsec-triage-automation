@@ -234,8 +234,8 @@ def create_dast_subtask(api_action: JiraApiActions, data: dict, field_mapping: d
 
         for values in data.get("findings"):
             desc = ""
-            # print(json.dumps(values.get('result_description')))
 
+            # Changing this might cause problems in appsec_triage_update_cx_findings.py, regex part of the code.
             for key, value in values.get("result_description").items():
                 if value in ("", []):
                     continue

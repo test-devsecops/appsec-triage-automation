@@ -144,9 +144,10 @@ def main():
             # JIRA to CX Mapping
             dast_triage_values_mapping = {
                 "False Positive": {"state": "Not Exploitable"},
-                "Downgrade to High": {"state": "Confirmed", "severity": "HIGH"},
-                "Downgrade to Medium": {"state": "Confirmed", "severity": "MEDIUM"},
-                "Downgrade to Low": {"state": "Confirmed", "severity": "LOW"},
+                "Critical": {"state": "Confirmed", "severity": "CRITICAL"},
+                "High": {"state": "Confirmed", "severity": "HIGH"},
+                "Medium": {"state": "Confirmed", "severity": "MEDIUM"},
+                "Low": {"state": "Confirmed", "severity": "LOW"},
             }
 
             cx_state, cx_severity, cx_score = _get_cx_state_severity_score(dast_triage_values_mapping, TRIAGE_STATUS)
@@ -174,9 +175,10 @@ def main():
                 # JIRA to CX Mapping
                 sast_triage_values_mapping = {
                     "False Positive": {"state": "NOT_EXPLOITABLE"},
-                    "Downgrade to High": {"state": "CONFIRMED", "severity": "HIGH"},
-                    "Downgrade to Medium": {"state": "CONFIRMED", "severity": "MEDIUM"},
-                    "Downgrade to Low": {"state": "CONFIRMED", "severity": "LOW"},
+                    "Critical": {"state": "CONFIRMED", "severity": "CRITICAL"},
+                    "High": {"state": "CONFIRMED", "severity": "HIGH"},
+                    "Medium": {"state": "CONFIRMED", "severity": "MEDIUM"},
+                    "Low": {"state": "CONFIRMED", "severity": "LOW"},
                 }
 
                 scan_results = cx_api_actions.get_sast_results(SCAN_ID, SAST_VULN_ID)
@@ -205,9 +207,10 @@ def main():
                 # JIRA to CX Mapping
                 sca_triage_values_mapping = {
                     "False Positive": {"state": "NotExploitable", "severity": "0.0"},
-                    "Downgrade to High": {"state": "Confirmed", "severity": "7"},
-                    "Downgrade to Medium": {"state": "Confirmed", "severity": "4"},
-                    "Downgrade to Low": {"state": "Confirmed", "severity": "0.1"},
+                    "Critical": {"state": "Confirmed", "severity": "9"},
+                    "High": {"state": "Confirmed", "severity": "7"},
+                    "Medium": {"state": "Confirmed", "severity": "4"},
+                    "Low": {"state": "Confirmed", "severity": "0.1"},
                 }
 
                 package_name, package_version = cx_helper.set_package_and_version(SCA_PACKAGE_NAME)
@@ -241,9 +244,10 @@ def main():
                 # JIRA to CX Mapping
                 csec_triage_values_mapping = {
                     "False Positive": {"state": "NotExploitable"},
-                    "Downgrade to High": {"state": "Confirmed", "severity": "High", "score": 7},
-                    "Downgrade to Medium": {"state": "Confirmed", "severity": "Medium", "score": 4},
-                    "Downgrade to Low": {"state": "Confirmed", "severity": "Low", "score": 0.1},
+                    "Critical": {"state": "Confirmed", "severity": "Critical", "score": 9},
+                    "High": {"state": "Confirmed", "severity": "High", "score": 7},
+                    "Medium": {"state": "Confirmed", "severity": "Medium", "score": 4},
+                    "Low": {"state": "Confirmed", "severity": "Low", "score": 0.1},
                 }
 
                 cx_state, cx_severity, cx_score = _get_cx_state_severity_score(csec_triage_values_mapping, TRIAGE_STATUS)
